@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.ProfileActivity">
+
+    <ImageView
+        android:id="@+id/img"
+        android:src="@drawable/img3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_user"
+        android:src="@drawable/ic_user_cirle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img"
+        app:layout_constraintBottom_toBottomOf="@+id/img"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="100dp"
+        android:layout_height="100dp">
+    </de.hdodenhof.circleimageview.CircleImageView>
+
+    <ImageView
+        android:id="@+id/camera"
+        android:src="@drawable/ic_camera"
+        app:layout_constraintBottom_toBottomOf="@id/img_user"
+        app:layout_constraintEnd_toEndOf="@id/img_user"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/name_user"
+        android:hint="Name"
+        android:drawableStart="@drawable/ic_person"
+        android:inputType="textNoSuggestions|text"
+        android:paddingLeft="16dp"
+        android:drawablePadding="6dp"
+        android:background="@drawable/shape_layout_edittext"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/email_user"
+        android:hint="Email"
+        android:background="@drawable/shape_layout_edittext"
+        android:drawableStart="@drawable/ic_email"
+        android:inputType="textNoSuggestions|numberDecimal"
+        android:paddingLeft="16dp"
+        android:drawablePadding="6dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/name_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:text="Lưu thông tin"
+        android:textAllCaps="false"
+        android:background="@drawable/shape_layout_button"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/email_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activity.AddRecipeActivity">
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_addrecipe"
+        android:background="#F35C2C"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="Thêm công thức mới"
+            android:textColor="#F9FAF1"
+            android:textSize="18sp"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </androidx.appcompat.widget.Toolbar>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.cardview.widget.CardView
+                android:id="@+id/info_image"
+                android:layout_width="match_parent"
+                android:layout_height="225dp"
+                app:cardCornerRadius="16dp">
+                <ImageView
+                    android:id="@+id/img_recipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <TableLayout
+                    android:padding="8dp"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TableRow android:gravity="center">
+                        <Button
+                            android:id="@+id/btn_add_photo"
+                            android:text="Thư viện"
+                            android:textAllCaps="false"
+                            android:textColor="#7A7878"
+                            android:layout_marginRight="32dp"
+                            android:background="@drawable/shape_tablayout"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"/>
+                        <Button
+                            android:id="@+id/btn_camera"
+                            android:text="Chụp ảnh"
+                            android:textAllCaps="false"
+                            android:textColor="#7A7878"
+                            android:textAlignment="gravity"
+                            android:layout_marginLeft="32dp"
+                            android:background="@drawable/shape_tablayout"
+                            android:layout_width="120dp"
+                            android:layout_height="wrap_content"/>
+                    </TableRow>
+                </TableLayout>
+            </androidx.cardview.widget.CardView>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:errorEnabled="false"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/name_recipe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_layout_edittext"
+                    android:hint="Tên món ăn"
+                    android:inputType="textNoSuggestions|textMultiLine"
+                    android:maxLength="255" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Spinner
+                android:id="@+id/recipe_category"
+                android:spinnerMode="dialog"
+                android:layout_marginTop="12dp"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:gravity="center_horizontal" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:text="Nguyên liệu"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layout_ingredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:errorEnabled="false"
+                    app:hintEnabled="false">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/name_ingredient"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shape_layout_edittext"
+                        android:hint="Chi tiết nguyên liệu"
+                        android:inputType="textNoSuggestions|textMultiLine"
+                        android:maxLength="255" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <TableLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TableRow android:gravity="center">
+                        <ImageButton
+                            android:id="@+id/btn_add_ingredient"
+                            android:src="@drawable/ic_add" />
+                        <TextView
+                            android:layout_gravity="center"
+                            android:textStyle="bold"
+                            android:textColor="#7A7878"
+                            android:textSize="18sp"
+                            android:text="Thêm Nguyên liệu"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"/>
+                    </TableRow>
+                </TableLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_ingredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:textSize="20sp"
+                    android:text="Các bước"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+
+                <LinearLayout
+                    android:id="@+id/layout_steps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="16dp"
+                        app:errorEnabled="false"
+                        app:hintEnabled="false">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/name_step"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/shape_layout_edittext"
+                            android:gravity="top"
+                            android:hint="Bước 1"
+                            android:inputType="textNoSuggestions|textMultiLine"
+                            android:maxLength="255"
+                            android:maxLines="10" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ImageButton
+                            android:id="@+id/btn_add_image_step"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@drawable/shape_tablayout"
+                            android:src="@drawable/ic_camera" />
+
+                        <ImageView
+                            android:id="@+id/img_show"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            android:layout_marginTop="12dp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TableLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TableRow android:gravity="center">
+                        <ImageButton
+                            android:id="@+id/btn_add_step"
+                            android:src="@drawable/ic_add" />
+                        <TextView
+                            android:layout_gravity="center"
+                            android:textStyle="bold"
+                            android:textColor="#7A7878"
+                            android:textSize="18sp"
+                            android:text="Thêm Bước"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"/>
+                    </TableRow>
+                </TableLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycle_recipeSteps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_insert_recipe"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp"
+                android:textColor="#fff"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:background="@drawable/shape_layout_button"
+                android:text="Thêm công thức"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
