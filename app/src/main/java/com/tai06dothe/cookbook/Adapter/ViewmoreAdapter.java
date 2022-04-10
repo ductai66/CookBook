@@ -82,14 +82,14 @@ public class ViewmoreAdapter extends RecyclerView.Adapter<ViewmoreAdapter.ViewHo
 //                }
 //            });
 
-//            itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Recipe recipe = mListRecipe.get(getAdapterPosition());
-//                    ((ViewmoreActivity) mContext).showRecipe(recipe);
-//
-//                }
-//            });
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Recipe recipe = mListRecipe.get(getAdapterPosition());
+                    ((ViewmoreActivity) mContext).showRecipe(recipe);
+
+                }
+            });
         }
     }
 }

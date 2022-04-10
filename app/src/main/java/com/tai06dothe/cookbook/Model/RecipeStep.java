@@ -1,6 +1,8 @@
 package com.tai06dothe.cookbook.Model;
 
-public class RecipeStep {
+import java.io.Serializable;
+
+public class RecipeStep implements Serializable {
     private String id;
     private String image;
     private String description;
