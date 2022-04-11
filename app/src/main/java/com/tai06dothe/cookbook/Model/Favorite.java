@@ -18,6 +18,19 @@ public class Favorite implements Serializable {
     public Favorite() {
     }
 
+    public Favorite(String favoriteId, String recipeId, String recipeName, String recipeImage, List<String> ingredientList, List<RecipeStep> recipeStepList, String categoryId, String createById, String userId, boolean status) {
+        this.favoriteId = favoriteId;
+        this.recipeId = recipeId;
+        this.recipeName = recipeName;
+        this.recipeImage = recipeImage;
+        this.ingredientList = ingredientList;
+        this.recipeStepList = recipeStepList;
+        this.categoryId = categoryId;
+        this.createById = createById;
+        this.userId = userId;
+        this.status = status;
+    }
+
     public String getFavoriteId() {
         return favoriteId;
     }

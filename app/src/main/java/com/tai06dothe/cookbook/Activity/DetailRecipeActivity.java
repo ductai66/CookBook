@@ -16,6 +16,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.tai06dothe.cookbook.Adapter.DetailRecipe.IngredientDetailAdapter;
+import com.tai06dothe.cookbook.Adapter.DetailRecipe.RecipeStepDetailAdapter;
 import com.tai06dothe.cookbook.Adapter.IngredientAdapter;
 import com.tai06dothe.cookbook.Adapter.RecipeStepAdapter;
 import com.tai06dothe.cookbook.Model.Recipe;
@@ -31,8 +33,8 @@ public class DetailRecipeActivity extends AppCompatActivity {
     TextView recipeNameDetail;
     RecyclerView recycle_ingredients, recycle_recipeSteps;
     Recipe recipe;
-    IngredientAdapter ingredientAdapter;
-    RecipeStepAdapter recipeStepAdapter;
+    IngredientDetailAdapter ingredientDetailAdapter;
+    RecipeStepDetailAdapter recipeStepDetailAdapter;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -53,7 +55,6 @@ public class DetailRecipeActivity extends AppCompatActivity {
     }
 
     private void getRecipe(){
-        recipe = new Recipe();
         DatabaseReference rootRecipe = mDatabase.child("Recipe").child(recipe.getRecipeId());
         rootRecipe.addValueEventListener(new ValueEventListener() {
             @Override
@@ -62,6 +63,7 @@ public class DetailRecipeActivity extends AppCompatActivity {
                 String linkImage = snapshot.child("recipeImage").getValue().toString();
                 Picasso.get().load(linkImage).into(recipeImageDetail);
                 getIngredientList();
+                getRecipeStepList();
             }
 
             @Override
@@ -83,7 +85,35 @@ public class DetailRecipeActivity extends AppCompatActivity {
                     String item = dataSnapshot.getValue(String.class);
                     ingredientList.add(item);
                     setIngredient(ingredientList);
-                    ingredientAdapter.notifyDataSetChanged();
+                    ingredientDetailAdapter.notifyDataSetChanged();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void setIngredient(List<String> mList) {
+        ingredientDetailAdapter = new IngredientDetailAdapter(DetailRecipeActivity.this, mList);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(DetailRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
+        recycle_ingredients.setLayoutManager(gridLayoutManager);
+        recycle_ingredients.setAdapter(ingredientDetailAdapter);
+        recycle_ingredients.setNestedScrollingEnabled(true);
+        recycle_ingredients.setHasFixedSize(true);
+    }
+
+    private void getRecipeStepList(){
+        mDatabase.child("Recipe").child(recipe.getRecipeId()).child("recipeStepList").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<RecipeStep> recipeStepList = new ArrayList<>();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    RecipeStep item = dataSnapshot.getValue(RecipeStep.class);
+                    recipeStepList.add(item);
+                    setRecipeStepAdapter(recipeStepList);
+                    recipeStepDetailAdapter.notifyDataSetChanged();
                 }
             }
             @Override
@@ -94,32 +124,14 @@ public class DetailRecipeActivity extends AppCompatActivity {
 
     }
 
-//    private void getRecipeStepList(String id_recipe){
-//        mDatabase.child("Recipe").child(id_recipe).child("recipeStepList").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<String> recipeStepList = new ArrayList<>();
-//                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-//                    String item = dataSnapshot.getValue(String.class);
-//                    recipeStepList.add(item);
-//                    setRecipeStepAdapter(recipeStepList);
-//                    recipeStepAdapter.notifyDataSetChanged();
-//                }
-//            }
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//
-//    }
-
-    private void setIngredient(List<String> mList) {
-        ingredientAdapter = new IngredientAdapter(DetailRecipeActivity.this, mList);
+    private void setRecipeStepAdapter(List<RecipeStep> mList) {
+        recipeStepDetailAdapter = new RecipeStepDetailAdapter(DetailRecipeActivity.this, mList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DetailRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
-        recycle_ingredients.setLayoutManager(gridLayoutManager);
-        recycle_ingredients.setAdapter(ingredientAdapter);
-        recycle_ingredients.setNestedScrollingEnabled(true);
-        recycle_ingredients.setHasFixedSize(true);
+        recycle_recipeSteps.setLayoutManager(gridLayoutManager);
+        recycle_recipeSteps.setAdapter(recipeStepDetailAdapter);
+        recycle_recipeSteps.setNestedScrollingEnabled(true);
+        recycle_recipeSteps.setHasFixedSize(true);
     }
+
+
 }

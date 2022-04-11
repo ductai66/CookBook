@@ -33,7 +33,7 @@ public class MyRecipeActivity extends AppCompatActivity {
     RecyclerView recycle_myRecipe;
     MyRecipeAdapter myRecipeAdapter;
     Button btn_add_recipe;
-    List<Recipe> recipeList;
+    List<Recipe> recipeList = new ArrayList<>();
     String id_user;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -44,13 +44,11 @@ public class MyRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_recipe);
         init();
         processEvent();
-        getAdapter();
     }
 
     private void init(){
         btn_add_recipe = (Button) findViewById(R.id.btn_add_recipe);
         recycle_myRecipe = (RecyclerView) findViewById(R.id.recycle_myRecipe);
-        recipeList = new ArrayList<>();
         Intent intent = getIntent();
         id_user = intent.getStringExtra("userId");
     }
@@ -72,7 +70,6 @@ public class MyRecipeActivity extends AppCompatActivity {
         recycle_myRecipe.setLayoutManager(gridLayoutManager);
         recycle_myRecipe.setAdapter(myRecipeAdapter);
         recycle_myRecipe.setHasFixedSize(true);
-        myRecipeAdapter.notifyDataSetChanged();
     }
 
     private void getAdapter() {
@@ -82,7 +79,7 @@ public class MyRecipeActivity extends AppCompatActivity {
         firebaseQueryRecipes.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<Recipe> recipeList = new ArrayList<>();
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Recipe recipe = dataSnapshot.getValue(Recipe.class);
                     recipeList.add(recipe);
@@ -105,7 +102,7 @@ public class MyRecipeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void delete_recipe(Recipe recipe, int position){
+    public void delete_recipe(Recipe recipe, int position) {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.app_name))
                 .setMessage("Do you want to delete item ?")
@@ -125,5 +122,11 @@ public class MyRecipeActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Cancel",null)
                 .show();
+    }
+
+    @Override
+    protected void onResume() {
+        getAdapter();
+        super.onResume();
     }
 }

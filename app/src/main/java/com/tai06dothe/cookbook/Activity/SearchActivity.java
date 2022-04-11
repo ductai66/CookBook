@@ -1,36 +1,40 @@
 package com.tai06dothe.cookbook.Activity;
 
+import android.os.Bundle;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.tai06dothe.cookbook.Adapter.IngredientAdapter;
 import com.tai06dothe.cookbook.Adapter.SearchAdapter;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
 
-    EditText etxt_search;
-    Button btn_search;
+    Toolbar toolbar;
     RecyclerView recycle_search;
+    TextInputEditText etxt_search;
+    ImageButton clear_text;
+    TextView empty_search;
+//    EditText etxt_search;
+//    Button btn_search;
+
 
     private List<Recipe> recipes;
     private SearchAdapter searchAdapter;
@@ -47,20 +51,27 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void init() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar_search);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
         etxt_search = findViewById(R.id.etxt_search);
-        btn_search = findViewById(R.id.btn_search);
+        clear_text = (ImageButton) findViewById(R.id.clear_text);
+        empty_search =findViewById(R.id.empty_search);
         recycle_search = findViewById(R.id.recycle_search);
     }
 
     private void processEvent() {
-        btn_search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recipes = new ArrayList<>();
-                processSearch_Test();
-                setAdapter(recipes);
-            }
-        });
+//        btn_search.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                recipes = new ArrayList<>();
+//                processSearch_Test();
+//                setAdapter(recipes);
+//            }
+//        });
     }
 
     private void setAdapter(List<Recipe> mList) {
