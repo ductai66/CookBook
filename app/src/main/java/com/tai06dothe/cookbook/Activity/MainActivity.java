@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -37,7 +38,9 @@ import com.tai06dothe.cookbook.OOP.CategoryRecipes;
 import com.tai06dothe.cookbook.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,13 +56,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
-    private List<CategoryRecipes> categoryRecipesList = new ArrayList<>();
-    private List<Recipe> recipeList = new ArrayList<>();
+    private List<CategoryRecipes> categoryRecipesList;
     private boolean back_home = Boolean.FALSE;
     private String id_user;
 
     private CategoryAdapter categoryAdapter;
-    private RecipeAdapter recipeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         init();
         getUser();
-        processCategoryRecipes();
-        setAdapter(categoryRecipesList);
     }
 
     private void init() {
@@ -121,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recycleView_main.setNestedScrollingEnabled(true);
         recycleView_main.setHasFixedSize(true);
     }
-
 
     private void processCategoryRecipes() {
         DatabaseReference rootCategoryRecipes = mDatabase.child("Category");
@@ -230,6 +228,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    @Override
+    protected void onResume() {
+        categoryRecipesList = new ArrayList<>();
+        processCategoryRecipes();
+        setAdapter(categoryRecipesList);
+        super.onResume();
+    }
+
+    //------- methods bellow called on RecipeAdapter -------
+
     public void showViewmore(String id_category) {
         Intent intent = new Intent(MainActivity.this, ViewmoreActivity.class);
         intent.putExtra("CategoryId", id_category);
@@ -237,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    public void getinfoUser(TextView txt_username, CircleImageView img_user, String id_user) {
+    public void getInfoUser(TextView txt_username, CircleImageView img_user, String id_user) {
         mDatabase.child("User").child(id_user).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -256,19 +264,68 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void checkFavorite(CheckBox checkFavorite, String id_recipe) {
         DatabaseReference rootFavorite = mDatabase.child("Favorite");
-        Query firebaseQuery = rootFavorite.orderByChild("recipeId").equalTo(id_recipe);
-        firebaseQuery.addValueEventListener(new ValueEventListener() {
+        Query firebaseQuery = rootFavorite.orderByChild("userId").equalTo(id_user);
+        firebaseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Favorite favorite = dataSnapshot.getValue(Favorite.class);
-                    if (favorite != null && id_user.equals(favorite.getUserId())) {
+                    if (favorite != null && id_recipe.equals(favorite.getRecipeId())) {
+                        checkFavorite.setChecked(Boolean.TRUE);
                         checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
+                        break;
                     }
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    public void addRecipeToFavorite(Recipe recipe, CheckBox checkFavorite) {
+        String key = mDatabase.push().getKey();
+
+        Map<String, String> addFavorite = new HashMap<>();
+        addFavorite.put("favoriteId", key);
+        addFavorite.put("userId", id_user);
+        addFavorite.put("recipeId", recipe.getRecipeId());
+        addFavorite.put("recipeName", recipe.getRecipeName());
+        addFavorite.put("recipeImage", recipe.getRecipeImage());
+        addFavorite.put("createById", recipe.getUserId());
+
+        DatabaseReference rootAddFavorite = mDatabase.child("Favorite");
+        if (key != null) {
+            rootAddFavorite.child(key).setValue(addFavorite);
+        }
+
+        checkFavorite.setChecked(Boolean.TRUE);
+        checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
+
+        Toast.makeText(MainActivity.this, "Them favorite thanh cong", Toast.LENGTH_SHORT).show();
+    }
+
+    public void removeRecipeFromFavorite(String recipeId, CheckBox checkFavorite) {
+        DatabaseReference rootRemoveFavorite = mDatabase.child("Favorite");
+
+        Query firebaseQuery = rootRemoveFavorite.orderByChild("userId").equalTo(id_user);
+        firebaseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Favorite favorite = dataSnapshot.getValue(Favorite.class);
+                    if (favorite != null && favorite.getRecipeId().equalsIgnoreCase(recipeId)) {
+                        rootRemoveFavorite.child(favorite.getFavoriteId()).removeValue();
+                        checkFavorite.setChecked(Boolean.FALSE);
+                        checkFavorite.setBackgroundResource(R.drawable.ic_favorite);
+                        Toast.makeText(MainActivity.this, "Xoa khoi danh sach yeu thic cua ban", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

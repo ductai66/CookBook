@@ -1,34 +1,26 @@
 package com.tai06dothe.cookbook.Model;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Favorite implements Serializable {
+
     private String favoriteId;
+    private String userId;
     private String recipeId;
     private String recipeName;
     private String recipeImage;
-    private List<String> ingredientList;
-    private List<RecipeStep> recipeStepList;
-    private String categoryId;
     private String createById;
-    private String userId;
-    private boolean status;
 
     public Favorite() {
     }
 
-    public Favorite(String favoriteId, String recipeId, String recipeName, String recipeImage, List<String> ingredientList, List<RecipeStep> recipeStepList, String categoryId, String createById, String userId, boolean status) {
+    public Favorite(String favoriteId, String userId, String recipeId, String recipeName, String recipeImage, String createById) {
         this.favoriteId = favoriteId;
+        this.userId = userId;
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.recipeImage = recipeImage;
-        this.ingredientList = ingredientList;
-        this.recipeStepList = recipeStepList;
-        this.categoryId = categoryId;
         this.createById = createById;
-        this.userId = userId;
-        this.status = status;
     }
 
     public String getFavoriteId() {
@@ -63,30 +55,6 @@ public class Favorite implements Serializable {
         this.recipeImage = recipeImage;
     }
 
-    public List<String> getIngredientList() {
-        return ingredientList;
-    }
-
-    public void setIngredientList(List<String> ingredientList) {
-        this.ingredientList = ingredientList;
-    }
-
-    public List<RecipeStep> getRecipeStepList() {
-        return recipeStepList;
-    }
-
-    public void setRecipeStepList(List<RecipeStep> recipeStepList) {
-        this.recipeStepList = recipeStepList;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public String getCreateById() {
         return createById;
     }
@@ -103,11 +71,4 @@ public class Favorite implements Serializable {
         this.userId = userId;
     }
 
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
 }

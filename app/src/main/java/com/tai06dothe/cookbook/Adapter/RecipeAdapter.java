@@ -40,10 +40,11 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecipeAdapter.ViewHolder holder, int position) {
         Recipe item = mList.get(position);
-        ((MainActivity)mContext).getinfoUser(holder.userName, holder.img_user, item.getUserId());
-        //((MainActivity)mContext).getImageUser(holder.img_user, item.getUserId());
+        ((MainActivity)mContext).getInfoUser(holder.userName, holder.img_user, item.getUserId());
+
         holder.recipeName.setText(item.getRecipeName());
         Picasso.get().load(item.getRecipeImage()).into(holder.recipeImage);
+
         // check favorite
         ((MainActivity)mContext).checkFavorite(holder.checkFavorite, item.getRecipeId());
     }
@@ -66,6 +67,20 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             recipeImage = itemView.findViewById(R.id.recipeImage);
             img_user = itemView.findViewById(R.id.img_user);
             checkFavorite = itemView.findViewById(R.id.checkFavorite);
+
+            checkFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean isCheck = checkFavorite.isChecked();
+                    int position = getAdapterPosition();
+                    Recipe recipe = mList.get(position);
+                    if (!isCheck) {
+                        ((MainActivity)mContext).removeRecipeFromFavorite(recipe.getRecipeId(), checkFavorite);
+                    } else {
+                        ((MainActivity)mContext).addRecipeToFavorite(recipe, checkFavorite);
+                    }
+                }
+            });
         }
     }
 }

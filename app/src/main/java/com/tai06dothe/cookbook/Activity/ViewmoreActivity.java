@@ -1,23 +1,17 @@
 package com.tai06dothe.cookbook.Activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
-import android.media.FaceDetector;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,23 +21,23 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tai06dothe.cookbook.Adapter.ViewmoreAdapter;
 import com.tai06dothe.cookbook.Model.Favorite;
-import com.tai06dothe.cookbook.Model.Ingredient;
 import com.tai06dothe.cookbook.Model.Recipe;
-import com.tai06dothe.cookbook.Model.RecipeStep;
 import com.tai06dothe.cookbook.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ViewmoreActivity extends AppCompatActivity {
+
+    Toolbar toolbar_viewmore;
     RecyclerView recycle_viewmore;
     ViewmoreAdapter viewmoreAdapter;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     String id_category, id_user;
-    private List<String> ingredients;
-    private List<RecipeStep> recipeSteps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +48,15 @@ public class ViewmoreActivity extends AppCompatActivity {
     }
 
     private void init() {
+        toolbar_viewmore = findViewById(R.id.toolbar_viewmore);
+        setSupportActionBar(toolbar_viewmore);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         recycle_viewmore = (RecyclerView) findViewById(R.id.recycle_viewmore);
         Intent intent = getIntent();
         id_category = intent.getStringExtra("CategoryId");
         id_user = intent.getStringExtra("userId");
-
     }
 
     private void setAdapterViewMore(List<Recipe> list) {
@@ -93,7 +91,7 @@ public class ViewmoreActivity extends AppCompatActivity {
         });
     }
 
-    public void getinfoUser(TextView txt_username, CircleImageView img_user, String id_user) {
+    public void getInfoUser(TextView txt_username, CircleImageView img_user, String id_user) {
         mDatabase.child("User").child(id_user).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -110,28 +108,20 @@ public class ViewmoreActivity extends AppCompatActivity {
         });
     }
 
+    //------- methods bellow called on ViewMoreAdapter -------
+
     public void checkFavorite(CheckBox checkFavorite, String id_recipe) {
         DatabaseReference rootFavorite = mDatabase.child("Favorite");
-        Query firebaseQuery = rootFavorite.orderByChild("recipeId").equalTo(id_recipe);
-        firebaseQuery.addValueEventListener(new ValueEventListener() {
+        Query firebaseQuery = rootFavorite.orderByChild("userId").equalTo(id_user);
+        firebaseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Favorite> favoriteList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Favorite favorite = dataSnapshot.getValue(Favorite.class);
-                    favoriteList.add(favorite);
-                    if (favorite != null && id_user.equals(favorite.getUserId())) {
+                    if (favorite != null && id_recipe.equals(favorite.getRecipeId())) {
+                        checkFavorite.setChecked(Boolean.TRUE);
                         checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
-                        checkFavorite.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                checkFavorite.setBackgroundResource(R.drawable.ic_favorite);
-                                for (int i = 0; i <= favoriteList.size(); i++){
-                                    removeRecipeFavorite(favoriteList, id_recipe, i);
-                                }
-                            }
-                        });
-
+                        break;
                     }
                 }
             }
@@ -141,49 +131,62 @@ public class ViewmoreActivity extends AppCompatActivity {
         });
     }
 
-    public void addRecipeFavorite(String recipeId, String nameRecipe, String imageRecipe, List<String> ingredients, List<RecipeStep> recipeSteps, String createById) {
-        DatabaseReference rootFavorite = mDatabase.child("Favorite");
-        String id = rootFavorite.push().getKey();
-        Favorite favorite = new Favorite();
-        favorite.setFavoriteId(id);
-        favorite.setRecipeId(recipeId);
-        favorite.setRecipeName(nameRecipe);
-        favorite.setRecipeImage(imageRecipe);
-        favorite.setIngredientList(ingredients);
-        favorite.setRecipeStepList(recipeSteps);
-        favorite.setCategoryId(id_category);
-        favorite.setCreateById(createById);
-        favorite.setUserId(id_user);
+    public void addRecipeToFavorite(Recipe recipe, CheckBox checkFavorite) {
+        String key = mDatabase.push().getKey();
 
-        if (id != null)
-            rootFavorite.child(id).setValue(favorite).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(ViewmoreActivity.this, "Thêm thành công vào danh sách yêu thích", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(ViewmoreActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
-                }
-            });
+        Map<String, String> addFavorite = new HashMap<>();
+        addFavorite.put("favoriteId", key);
+        addFavorite.put("userId", id_user);
+        addFavorite.put("recipeId", recipe.getRecipeId());
+        addFavorite.put("recipeName", recipe.getRecipeName());
+        addFavorite.put("recipeImage", recipe.getRecipeImage());
+        addFavorite.put("createById", recipe.getUserId());
+
+        DatabaseReference rootAddFavorite = mDatabase.child("Favorite");
+        if (key != null) {
+            rootAddFavorite.child(key).setValue(addFavorite);
+        }
+
+        checkFavorite.setChecked(Boolean.TRUE);
+        checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
+
+        Toast.makeText(ViewmoreActivity.this, "Them favorite thanh cong", Toast.LENGTH_SHORT).show();
     }
 
-    public void removeRecipeFavorite(List<Favorite> favoriteList, String id_recipe, int position) {
-        DatabaseReference rootRemoveFavorite = mDatabase.child("Favorite").child(id_recipe);
-        rootRemoveFavorite.removeValue(new DatabaseReference.CompletionListener() {
+    public void removeRecipeFromFavorite(String recipeId, CheckBox checkFavorite) {
+        DatabaseReference rootRemoveFavorite = mDatabase.child("Favorite");
+        System.out.println("id_user = " + id_user);
+        Query firebaseQuery = rootRemoveFavorite.orderByChild("userId").equalTo(id_user);
+        firebaseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                favoriteList.remove(position);
-                Toast.makeText(ViewmoreActivity.this, "Đã loại khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Favorite favorite = dataSnapshot.getValue(Favorite.class);
+                    if (favorite != null && favorite.getRecipeId().equalsIgnoreCase(recipeId)) {
+                        rootRemoveFavorite.child(favorite.getFavoriteId()).removeValue();
+                        checkFavorite.setChecked(Boolean.FALSE);
+                        checkFavorite.setBackgroundResource(R.drawable.ic_favorite);
+                        Toast.makeText(ViewmoreActivity.this, "Xoa khoi danh sach yeu thic cua ban", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
-
     }
 
     public void showRecipe(Recipe recipe) {
         Intent intent = new Intent(ViewmoreActivity.this, DetailRecipeActivity.class);
         intent.putExtra("recipe", recipe);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
