@@ -1,31 +1,35 @@
 package com.tai06dothe.cookbook.Model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 public class Comment implements Serializable {
-    private int id;
+
+    private String commentId;
     private String content;
     private String image;
-    private int userId;
-    private int recipeId;
+    private String userId;
+    private String recipeId;
+    private String createAt;
 
     public Comment() {
     }
 
-    public Comment(int id, String content, String image, int userId, int recipeId) {
-        this.id = id;
+    public Comment(String commentId, String content, String image, String userId, String recipeId, String createAt) {
+        this.commentId = commentId;
         this.content = content;
         this.image = image;
         this.userId = userId;
         this.recipeId = recipeId;
+        this.createAt = createAt;
     }
 
-    public int getId() {
-        return id;
+    public String getCommentId() {
+        return commentId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setCommentId(String commentId) {
+        this.commentId = commentId;
     }
 
     public String getContent() {
@@ -44,19 +48,27 @@ public class Comment implements Serializable {
         this.image = image;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public int getRecipeId() {
+    public String getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(int recipeId) {
+    public void setRecipeId(String recipeId) {
         this.recipeId = recipeId;
+    }
+
+    public String getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(String createAt) {
+        this.createAt = createAt;
     }
 }

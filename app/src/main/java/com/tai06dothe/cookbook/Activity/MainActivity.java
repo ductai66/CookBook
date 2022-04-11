@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void setAdapter(List<CategoryRecipes> mList) {
+    private void setCategoryAdapter(List<CategoryRecipes> mList) {
         categoryAdapter = new CategoryAdapter(MainActivity.this, mList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 1, GridLayoutManager.VERTICAL, false);
         recycleView_main.setLayoutManager(gridLayoutManager);
@@ -156,9 +156,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Recipe recipe = item.getValue(Recipe.class);
                     recipes.add(recipe);
                 }
-                categoryRecipes.setRecipes(recipes);
-                categoryRecipesList.add(categoryRecipes);
-                categoryAdapter.notifyDataSetChanged();
+                if (recipes.size() > 0) {
+                    categoryRecipes.setRecipes(recipes);
+                    categoryRecipesList.add(categoryRecipes);
+                    categoryAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -207,12 +209,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    //phần setup menu search
+    // phần setup menu search
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.menu_search, menu);
         return true;
+    }
+
+    // xử lý khi click vào icon search
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.search_bar:
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -232,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         categoryRecipesList = new ArrayList<>();
         processCategoryRecipes();
-        setAdapter(categoryRecipesList);
+        setCategoryAdapter(categoryRecipesList);
         super.onResume();
     }
 
