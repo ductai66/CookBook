@@ -2,6 +2,7 @@ package com.tai06dothe.cookbook.LoginSignup;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -14,9 +15,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.tai06dothe.cookbook.Model.Role;
+import com.tai06dothe.cookbook.Model.User;
 import com.tai06dothe.cookbook.R;
 
 import java.util.HashMap;
@@ -27,6 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     TextInputEditText etxt_email_signup, etxt_password_signup, etxt_rePassword_signup, etxt_name_signup;
     Button btn_signup;
     TextView login_signup;
+    boolean isCheck = Boolean.TRUE;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -67,33 +74,56 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    private void checkSignup(String email, String password, String rePass, String name){
-        boolean isCheck = Boolean.TRUE;
+    private void checkSignup(String email, String password, String rePass, String name) {
         String userId = mDatabase.push().getKey();
 
         if (email.isEmpty()) {
-            etxt_email_signup.setError("Email không được để trống");
+            Toast.makeText(this, "Email không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        }else etxt_email_signup.setError(null);
+        } else etxt_email_signup.setError(null);
 
-        if (password.isEmpty()){
-            etxt_password_signup.setError("Mật khẩu không được để trống");
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Mật khẩu không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
         } else etxt_password_signup.setError(null);
 
-        if (!rePass.equals(password)){
-            etxt_rePassword_signup.setError("Xác nhận mật khẩu không đúng");
+        if (!rePass.equals(password)) {
+            Toast.makeText(this, "Xác nhận mật khẩu không đúng", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        }else etxt_rePassword_signup.setError(null);
+        } else etxt_rePassword_signup.setError(null);
 
-        if (name.isEmpty()){
-            etxt_name_signup.setError("Tên không được để trống");
+        if (name.isEmpty()) {
+            Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        }else etxt_name_signup.setError(null);
+        } else etxt_name_signup.setError(null);
 
-        if (isCheck) {
-            saveUser(userId, email, password, name);
-        }
+        checkUserExist(userId, email, password, name);
+    }
+
+    private void checkUserExist(String userId, String email, String password, String name) {
+        DatabaseReference rootEmail = mDatabase.child("User");
+        rootEmail.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    User user = dataSnapshot.getValue(User.class);
+                    if (email.equalsIgnoreCase(user.getEmail())){
+                        isCheck = Boolean.FALSE;
+                        Toast.makeText(SignupActivity.this, "Email đã được sử dụng", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                }
+                if (isCheck == true) {
+                    saveUser(userId, email, password, name);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void saveUser(String userId, String email, String password, String name) {

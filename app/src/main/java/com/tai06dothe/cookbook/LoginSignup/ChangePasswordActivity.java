@@ -26,6 +26,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
     TextInputEditText etxt_oldPassword_change, etxt_newPassword_change, etxt_rePassword_change;
     Button btn_update_password;
     String id_user;
+    boolean isCheck = Boolean.TRUE;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
@@ -36,7 +37,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         processEvent();
     }
 
-    private void init(){
+    private void init() {
         txt_inputlayout1 = (TextInputLayout) findViewById(R.id.txt_inputlayout1);
 
         etxt_oldPassword_change = (TextInputEditText) findViewById(R.id.etxt_oldPassword_change);
@@ -60,10 +61,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
         });
     }
 
-    private void checkValidate(String oldPassword, String newPassword, String rePassword){
+    private void checkValidate(String oldPassword, String newPassword, String rePassword) {
         DatabaseReference rootPass = mDatabase.child("User").child(id_user);
-        boolean isCheck = Boolean.TRUE;
-        if (oldPassword.isEmpty()){
+
+        if (oldPassword.isEmpty()) {
             etxt_oldPassword_change.setError("Mật khẩu hiện tại không được để trống");
             txt_inputlayout1.setPasswordVisibilityToggleEnabled(false);
             isCheck = false;
@@ -71,28 +72,39 @@ public class ChangePasswordActivity extends AppCompatActivity {
             etxt_oldPassword_change.setError(null);
             txt_inputlayout1.setPasswordVisibilityToggleEnabled(true);
         }
-        if (newPassword.isEmpty()){
+        if (newPassword.isEmpty()) {
             etxt_newPassword_change.setError("Mật khẩu mới không được để trống");
             isCheck = false;
         } else etxt_newPassword_change.setError(null);
 
-        if (!rePassword.equals(newPassword)){
+        if (!rePassword.equals(newPassword)) {
             etxt_rePassword_change.setError("Xác nhận mật khẩu không đúng");
             isCheck = false;
-        }else etxt_rePassword_change.setError(null);
+        } else etxt_rePassword_change.setError(null);
 
-        if (!oldPassword.equals(rootPass.child("password"))){
-            etxt_oldPassword_change.setError("Mật khẩu hiện tại không đúng");
-            isCheck = false;
-        } else etxt_oldPassword_change.setError(null);
+        rootPass.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String pass = snapshot.child("password").getValue().toString();
+                if (!oldPassword.equals(pass)) {
+                    isCheck = false;
+                    etxt_oldPassword_change.setError("Mật khẩu hiện tại không đúng");
+                }
+                etxt_oldPassword_change.setError(null);
+                if (isCheck == true) {
+                    processChange(newPassword);
+                }
+            }
 
-        if (isCheck) {
-            processChange(newPassword);
-        }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
     }
 
-    private void processChange(String newPassword){
+    private void processChange(String newPassword) {
         DatabaseReference rootPass = mDatabase.child("User").child(id_user);
         rootPass.child("password").setValue(newPassword).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

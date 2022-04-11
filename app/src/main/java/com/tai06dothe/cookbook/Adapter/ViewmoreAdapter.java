@@ -82,7 +82,7 @@ public class ViewmoreAdapter extends RecyclerView.Adapter<ViewmoreAdapter.ViewHo
 //                }
 //            });
 
-            itemView.setOnClickListener(new View.OnClickListener() {
+            recipeImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Recipe recipe = mListRecipe.get(getAdapterPosition());

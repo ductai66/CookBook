@@ -7,20 +7,55 @@
     android:orientation="vertical"
     tools:context=".Activity.SearchActivity">
 
-    <EditText
-        android:id="@+id/etxt_search"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_search"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btn_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="search" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycle_search"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etxt_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/shape_layout_edittext"
+                android:hint="Tìm kiếm"
+                android:inputType="text"
+                android:paddingLeft="20dp" />
+
+            <ImageButton
+                android:id="@+id/clear_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@+id/etxt_search"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                android:background="#fff"
+                android:elevation="3dp"
+                android:src="@drawable/ic_close" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycle_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/empty_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Không tìm thấy kết quả"
+            android:textSize="18sp"
+            android:visibility="gone" />
+    </RelativeLayout>
 </LinearLayout>

@@ -2,11 +2,12 @@ package com.tai06dothe.cookbook.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -208,6 +209,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    //phần setup menu search
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_search, menu);
+        return true;
+    }
+
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -244,22 +253,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
     }
-
-//    public void getImageUser(CircleImageView img_user, String id_user) {
-//        mDatabase.child("User").child(id_user).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                    String img = snapshot.child("avatar").getValue().toString();
-//                    Picasso.get().load(img).into(img_user);
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
-//    }
 
     public void checkFavorite(CheckBox checkFavorite, String id_recipe) {
         DatabaseReference rootFavorite = mDatabase.child("Favorite");

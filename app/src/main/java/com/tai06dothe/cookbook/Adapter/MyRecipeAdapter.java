@@ -40,6 +40,7 @@ public class MyRecipeAdapter extends RecyclerView.Adapter<MyRecipeAdapter.ViewHo
         Recipe recipe = mList.get(position);
         holder.recipeName.setText(recipe.getRecipeName());
         Picasso.get().load(recipe.getRecipeImage()).into(holder.recipeImage);
+
     }
 
     @Override
