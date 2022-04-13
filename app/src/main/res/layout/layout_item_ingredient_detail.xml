@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="18sp"
+        android:textColor="#000"
         android:textStyle="bold" />
 
     <TextView
@@ -19,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_weight="9"
+        android:textColor="#000"
         android:text="1kg khoai lang"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="18sp" />
 </LinearLayout>

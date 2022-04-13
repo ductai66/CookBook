@@ -23,8 +23,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.tai06dothe.cookbook.Adapter.CommentAdapter;
 import com.tai06dothe.cookbook.Adapter.DetailRecipe.IngredientDetailAdapter;
 import com.tai06dothe.cookbook.Adapter.DetailRecipe.RecipeStepDetailAdapter;
 import com.tai06dothe.cookbook.Adapter.IngredientAdapter;
@@ -42,6 +44,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class DetailRecipeActivity extends AppCompatActivity {
 
     TextInputEditText etxt_comment;
@@ -49,13 +53,15 @@ public class DetailRecipeActivity extends AppCompatActivity {
     ImageButton send_add_comment;
     TextView recipeNameDetail;
     RecyclerView recycle_ingredients, recycle_recipeSteps, recycle_comment;
-
-    private String id_user;
-
-    private Recipe recipe;
-    private IngredientDetailAdapter ingredientDetailAdapter;
-    private RecipeStepDetailAdapter recipeStepDetailAdapter;
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    List<String> ingredients;
+    List<RecipeStep> recipeSteps;
+    List<Comment> comments;
+    String id_user;
+    Recipe recipe;
+    IngredientDetailAdapter ingredientDetailAdapter;
+    RecipeStepDetailAdapter recipeStepDetailAdapter;
+    CommentAdapter commentAdapter;
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,59 +69,52 @@ public class DetailRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_recipe);
         init();
         getRecipe();
+        getComment();
         processEvent();
     }
 
-    private void init(){
+    private void init() {
         send_add_comment = findViewById(R.id.send_add_comment);
         etxt_comment = findViewById(R.id.etxt_comment);
         recycle_comment = findViewById(R.id.recycle_comment);
 
-        recipeImageDetail = (ImageView) findViewById(R.id.recipeImageDetail);
-        recipeNameDetail = (TextView) findViewById(R.id.recipeNameDetail);
-        recycle_ingredients = (RecyclerView) findViewById(R.id.recycle_ingredients);
-        recycle_recipeSteps = (RecyclerView) findViewById(R.id.recycle_recipeSteps);
+        recipeImageDetail = findViewById(R.id.recipeImageDetail);
+        recipeNameDetail = findViewById(R.id.recipeNameDetail);
+        recycle_ingredients = findViewById(R.id.recycle_ingredients);
+        recycle_recipeSteps = findViewById(R.id.recycle_recipeSteps);
 
         recipe = (Recipe) getIntent().getSerializableExtra("recipe");
+
+        ingredients = recipe.getIngredientList();
+        recipeSteps = recipe.getRecipeStepList();
+        comments = new ArrayList<>();
 
         Intent intent = getIntent();
         id_user = intent.getStringExtra("userId");
     }
 
-    private void getRecipe(){
-        DatabaseReference rootRecipe = mDatabase.child("Recipe").child(recipe.getRecipeId());
-        rootRecipe.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                recipeNameDetail.setText(snapshot.child("recipeName").getValue().toString());
-                String linkImage = snapshot.child("recipeImage").getValue().toString();
-                Picasso.get().load(linkImage).into(recipeImageDetail);
-                getIngredientList();
-                getRecipeStepList();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+    private void getRecipe() {
+        Picasso.get().load(recipe.getRecipeImage()).into(recipeImageDetail);
+        recipeNameDetail.setText(recipe.getRecipeName());
+        setIngredientAdapter(ingredients);
+        setRecipeStepAdapter(recipeSteps);
     }
 
-    private void getIngredientList(){
-        DatabaseReference rootIngredient = mDatabase.child("Recipe").child(recipe.getRecipeId()).child("ingredientList");
+    private void getComment() {
+        DatabaseReference rootComment = mDatabase.child("Comment");
+        Query firebaseQueryComments = rootComment.orderByChild("recipeId").equalTo(recipe.getRecipeId());
 
-        rootIngredient.addValueEventListener(new ValueEventListener() {
+        firebaseQueryComments.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<String> ingredientList = new ArrayList<>();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    String item = dataSnapshot.getValue(String.class);
-                    ingredientList.add(item);
-                    setIngredientAdapter(ingredientList);
-                    ingredientDetailAdapter.notifyDataSetChanged();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Comment comment = dataSnapshot.getValue(Comment.class);
+                    comments.add(comment);
                 }
+                setCommentAdapter(comments);
+                commentAdapter.notifyDataSetChanged();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -132,26 +131,6 @@ public class DetailRecipeActivity extends AppCompatActivity {
         recycle_ingredients.setHasFixedSize(true);
     }
 
-    private void getRecipeStepList(){
-        mDatabase.child("Recipe").child(recipe.getRecipeId()).child("recipeStepList").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<RecipeStep> recipeStepList = new ArrayList<>();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    RecipeStep item = dataSnapshot.getValue(RecipeStep.class);
-                    recipeStepList.add(item);
-                    setRecipeStepAdapter(recipeStepList);
-                    recipeStepDetailAdapter.notifyDataSetChanged();
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
-
     private void setRecipeStepAdapter(List<RecipeStep> mList) {
         recipeStepDetailAdapter = new RecipeStepDetailAdapter(DetailRecipeActivity.this, mList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DetailRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
@@ -161,6 +140,15 @@ public class DetailRecipeActivity extends AppCompatActivity {
         recycle_recipeSteps.setHasFixedSize(true);
     }
 
+    private void setCommentAdapter(List<Comment> mList) {
+        commentAdapter = new CommentAdapter(DetailRecipeActivity.this, mList);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(DetailRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
+        recycle_comment.setLayoutManager(gridLayoutManager);
+        recycle_comment.setAdapter(commentAdapter);
+        recycle_comment.setNestedScrollingEnabled(true);
+        recycle_comment.setHasFixedSize(true);
+    }
+
     // add feature comment
     private void processEvent() {
         etxt_comment.addTextChangedListener(new TextWatcher() {
@@ -168,14 +156,16 @@ public class DetailRecipeActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length()>0){
+                if (s.length() > 0) {
                     send_add_comment.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     send_add_comment.setVisibility(View.GONE);
                 }
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }
@@ -220,5 +210,28 @@ public class DetailRecipeActivity extends AppCompatActivity {
         rootAddComment.child(key).setValue(comment);
 
         Toast.makeText(this, "Add comment success", Toast.LENGTH_SHORT).show();
+    }
+
+    public void getInfoUser(TextView txt_username, CircleImageView img_user, String id_user) {
+        mDatabase.child("User").child(id_user).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String username = snapshot.child("name").getValue().toString();
+                txt_username.setText(username);
+                String img = snapshot.child("avatar").getValue().toString();
+                Picasso.get().load(img).into(img_user);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

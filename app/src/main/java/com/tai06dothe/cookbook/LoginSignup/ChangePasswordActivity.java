@@ -65,43 +65,36 @@ public class ChangePasswordActivity extends AppCompatActivity {
         DatabaseReference rootPass = mDatabase.child("User").child(id_user);
 
         if (oldPassword.isEmpty()) {
-            etxt_oldPassword_change.setError("Mật khẩu hiện tại không được để trống");
-            txt_inputlayout1.setPasswordVisibilityToggleEnabled(false);
+            Toast.makeText(this, "Mật khẩu hiện tại không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else {
-            etxt_oldPassword_change.setError(null);
-            txt_inputlayout1.setPasswordVisibilityToggleEnabled(true);
         }
-        if (newPassword.isEmpty()) {
-            etxt_newPassword_change.setError("Mật khẩu mới không được để trống");
+        else if (newPassword.isEmpty()) {
+            Toast.makeText(this, "Mật khẩu mới không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_newPassword_change.setError(null);
-
-        if (!rePassword.equals(newPassword)) {
-            etxt_rePassword_change.setError("Xác nhận mật khẩu không đúng");
+        }
+        else if (!rePassword.equals(newPassword)) {
+            Toast.makeText(this, "Xác nhận mật khẩu không đúng", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_rePassword_change.setError(null);
-
-        rootPass.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String pass = snapshot.child("password").getValue().toString();
-                if (!oldPassword.equals(pass)) {
-                    isCheck = false;
-                    etxt_oldPassword_change.setError("Mật khẩu hiện tại không đúng");
+        }
+        else if (isCheck == false){
+            rootPass.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String pass = snapshot.child("password").getValue().toString();
+                    if (!oldPassword.equals(pass)) {
+                        isCheck = false;
+                        Toast.makeText(ChangePasswordActivity.this, "Mật khẩu hiện tại không đúng", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                etxt_oldPassword_change.setError(null);
-                if (isCheck == true) {
-                    processChange(newPassword);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
+            });
+        }
+        else if (isCheck == true){
+            processChange(newPassword);
+        }
     }
 
     private void processChange(String newPassword) {

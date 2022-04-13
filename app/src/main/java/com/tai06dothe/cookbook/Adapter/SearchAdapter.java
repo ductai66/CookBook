@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -11,10 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
+import com.tai06dothe.cookbook.Activity.SearchActivity;
+import com.tai06dothe.cookbook.Activity.ViewmoreActivity;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.R;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder> {
 
@@ -35,9 +40,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull SearchAdapter.ViewHolder holder, int position) {
-        Recipe item = mList.get(position);
-        holder.recipeName.setText(item.getRecipeName());
-        Picasso.get().load(item.getRecipeImage()).into(holder.recipeImage);
+        Recipe recipe = mList.get(position);
+        holder.recipeName.setText(recipe.getRecipeName());
+        Picasso.get().load(recipe.getRecipeImage()).into(holder.recipeImage);
+        ((SearchActivity) mContext).getInfoUser(holder.userName, holder.img_user, recipe.getUserId());
+        ((SearchActivity) mContext).checkFavorite(holder.checkFavorite, recipe.getRecipeId());
     }
 
     @Override
@@ -47,14 +54,41 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView recipeName;
+        TextView userName, recipeName;
         ImageView recipeImage;
+        CircleImageView img_user;
+        CheckBox checkFavorite;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            userName = itemView.findViewById(R.id.userName);
             recipeName = itemView.findViewById(R.id.recipeName);
             recipeImage = itemView.findViewById(R.id.recipeImage);
+            img_user = itemView.findViewById(R.id.img_user);
+            checkFavorite = itemView.findViewById(R.id.checkFavorite);
+
+            recipeImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Recipe recipe = mList.get(getAdapterPosition());
+                    ((SearchActivity) mContext).showRecipe(recipe);
+
+                }
+            });
+
+            checkFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean isCheck = checkFavorite.isChecked();
+                    int position = getAdapterPosition();
+                    Recipe recipe = mList.get(position);
+                    if (!isCheck) {
+                        ((SearchActivity) mContext).removeRecipeFromFavorite(recipe.getRecipeId(), checkFavorite);
+                    } else {
+                        ((SearchActivity) mContext).addRecipeToFavorite(recipe, checkFavorite);
+                    }
+                }
+            });
         }
     }
 }

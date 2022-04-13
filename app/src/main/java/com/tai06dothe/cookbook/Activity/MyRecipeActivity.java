@@ -26,31 +26,32 @@ import com.tai06dothe.cookbook.Model.Favorite;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyRecipeActivity extends AppCompatActivity {
+
     RecyclerView recycle_myRecipe;
     MyRecipeAdapter myRecipeAdapter;
     Button btn_add_recipe;
-    List<Recipe> recipeList = new ArrayList<>();
-    String id_user;
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
+    private List<Recipe> recipeList;
+    private String id_user;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_recipe);
+
         init();
         processEvent();
     }
 
     private void init(){
-        btn_add_recipe = (Button) findViewById(R.id.btn_add_recipe);
-        recycle_myRecipe = (RecyclerView) findViewById(R.id.recycle_myRecipe);
-        Intent intent = getIntent();
-        id_user = intent.getStringExtra("userId");
+        btn_add_recipe = findViewById(R.id.btn_add_recipe);
+        recycle_myRecipe = findViewById(R.id.recycle_myRecipe);
     }
 
     private void processEvent(){
@@ -64,7 +65,7 @@ public class MyRecipeActivity extends AppCompatActivity {
         });
     }
 
-    private void setAdapterMyRecipe(List<Recipe> list) {
+    private void setMyRecipeAdapter(List<Recipe> list) {
         myRecipeAdapter = new MyRecipeAdapter(this, list);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
         recycle_myRecipe.setLayoutManager(gridLayoutManager);
@@ -72,20 +73,20 @@ public class MyRecipeActivity extends AppCompatActivity {
         recycle_myRecipe.setHasFixedSize(true);
     }
 
-    private void getAdapter() {
+    private void getMyRecipe() {
         DatabaseReference mRef = mDatabase.child("Recipe");
         Query firebaseQueryRecipes = mRef.orderByChild("userId").equalTo(id_user);
 
-        firebaseQueryRecipes.addValueEventListener(new ValueEventListener() {
+        firebaseQueryRecipes.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
+                recipeList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Recipe recipe = dataSnapshot.getValue(Recipe.class);
                     recipeList.add(recipe);
+                    setMyRecipeAdapter(recipeList);
+                    myRecipeAdapter.notifyDataSetChanged();
                 }
-                setAdapterMyRecipe(recipeList);
-                myRecipeAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -97,11 +98,11 @@ public class MyRecipeActivity extends AppCompatActivity {
 
     public void edit_recipe(Recipe recipe){
         Intent intent = new Intent(MyRecipeActivity.this, EditRecipeActivity.class);
-        intent.putExtra("recipeId", recipe.getRecipeId());
-        intent.putExtra("userId", recipe.getUserId());
+        intent.putExtra("recipe", recipe);
         startActivity(intent);
     }
 
+    // possible bug
     public void delete_recipe(Recipe recipe, int position) {
         new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.app_name))
@@ -113,7 +114,7 @@ public class MyRecipeActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                                 recipeList.remove(position);
-                                setAdapterMyRecipe(recipeList);
+                                setMyRecipeAdapter(recipeList);
                                 myRecipeAdapter.notifyDataSetChanged();
                                 Toast.makeText(MyRecipeActivity.this, "Delete item successfully", Toast.LENGTH_SHORT).show();
                             }
@@ -126,7 +127,15 @@ public class MyRecipeActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        getAdapter();
+        Intent intent = getIntent();
+        id_user = intent.getStringExtra("userId");
+        getMyRecipe();
         super.onResume();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }

@@ -124,4 +124,10 @@ public class RecipeFavoriteActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 }

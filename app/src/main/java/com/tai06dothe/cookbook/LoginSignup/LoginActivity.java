@@ -69,17 +69,14 @@ public class LoginActivity extends AppCompatActivity {
     private void checkLogin(String email, String password) {
         boolean isCheck = Boolean.TRUE;
         if (email.isEmpty()) {
-            etxt_email_login.setError("Email không được để trống");
+            Toast.makeText(this, "Email không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_email_login.setError(null);
-        if (password.isEmpty()) {
-            etxt_password_login.setError("Mật khẩu không được để trống");
-            txt_inputlayout_login2.setPasswordVisibilityToggleEnabled(false);
-            isCheck = false;
-        } else {
-            etxt_password_login.setError(null);
         }
-        if (isCheck) {
+        else if (password.isEmpty()) {
+            Toast.makeText(this, "Mật khẩu không được để trống", Toast.LENGTH_SHORT).show();
+            isCheck = false;
+        }
+        else if (isCheck) {
             processLogin(email, password);
         }
     }

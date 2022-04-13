@@ -41,6 +41,7 @@
                 app:cardCornerRadius="16dp">
 
                 <ImageView
+                    android:scaleType="centerCrop"
                     android:id="@+id/recipeImageDetail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
@@ -98,6 +99,8 @@
             </LinearLayout>
 
             <LinearLayout
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="30dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -113,6 +116,7 @@
                         android:background="@drawable/shape_layout_edittext"
                         android:hint="Bình luận"
                         android:inputType="text"
+                        android:maxLines="10"
                         android:paddingLeft="20dp" />
 
                     <ImageButton
@@ -129,6 +133,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_comment"
+                    android:layout_marginBottom="100dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>

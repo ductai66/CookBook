@@ -80,24 +80,22 @@ public class SignupActivity extends AppCompatActivity {
         if (email.isEmpty()) {
             Toast.makeText(this, "Email không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_email_signup.setError(null);
-
-        if (password.isEmpty()) {
+        }
+        else if (password.isEmpty()) {
             Toast.makeText(this, "Mật khẩu không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_password_signup.setError(null);
-
-        if (!rePass.equals(password)) {
+        }
+        else if (!rePass.equals(password)) {
             Toast.makeText(this, "Xác nhận mật khẩu không đúng", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_rePassword_signup.setError(null);
-
-        if (name.isEmpty()) {
+        }
+        else if (name.isEmpty()) {
             Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
-        } else etxt_name_signup.setError(null);
-
-        checkUserExist(userId, email, password, name);
+        }
+        else {
+            checkUserExist(userId, email, password, name);
+        }
     }
 
     private void checkUserExist(String userId, String email, String password, String name) {

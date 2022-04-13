@@ -9,6 +9,7 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_search"
+        android:background="#F35C2C"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

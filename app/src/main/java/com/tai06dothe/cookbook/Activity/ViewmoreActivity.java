@@ -34,6 +34,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ViewmoreActivity extends AppCompatActivity {
 
     Toolbar toolbar_viewmore;
+    TextView title_viewmore;
     RecyclerView recycle_viewmore;
     ViewmoreAdapter viewmoreAdapter;
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -44,7 +45,7 @@ public class ViewmoreActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_viewmore);
         init();
-        getAdapter();
+        getRecipeAdapter();
     }
 
     private void init() {
@@ -53,9 +54,10 @@ public class ViewmoreActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        recycle_viewmore = (RecyclerView) findViewById(R.id.recycle_viewmore);
+        title_viewmore = findViewById(R.id.title_viewmore);
+        recycle_viewmore = findViewById(R.id.recycle_viewmore);
         Intent intent = getIntent();
-        id_category = intent.getStringExtra("CategoryId");
+        id_category = intent.getStringExtra("categoryId");
         id_user = intent.getStringExtra("userId");
     }
 
@@ -68,7 +70,7 @@ public class ViewmoreActivity extends AppCompatActivity {
         viewmoreAdapter.notifyDataSetChanged();
     }
 
-    private void getAdapter() {
+    private void getRecipeAdapter() {
         DatabaseReference mRef = mDatabase.child("Recipe");
         Query firebaseQueryRecipes = mRef.orderByChild("categoryId").equalTo(id_category);
 
@@ -80,6 +82,7 @@ public class ViewmoreActivity extends AppCompatActivity {
                     Recipe recipe = dataSnapshot.getValue(Recipe.class);
                     recipes.add(recipe);
                 }
+                title_viewmore.setText("Công thức các món " + id_category);
                 setAdapterViewMore(recipes);
                 viewmoreAdapter.notifyDataSetChanged();
             }
