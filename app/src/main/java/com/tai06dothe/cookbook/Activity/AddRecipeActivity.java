@@ -62,7 +62,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private static final StorageReference reference = FirebaseStorage.getInstance().getReference();
     private Uri imageUri, imageStepUri;
 
-    private List<String> listType;
+    private List<String> listCategory;
     private List<String> ingredients;
     private List<RecipeStep> recipeSteps;
     private Boolean check = Boolean.FALSE;
@@ -84,11 +84,9 @@ public class AddRecipeActivity extends AppCompatActivity {
         processIngredient();
 
         //ingredients
-        setIngredient(ingredients);
-
+        setIngredientAdapter(ingredients);
         //recipe steps
         setRecipeStepAdapter(recipeSteps);
-
     }
 
     private void init() {
@@ -117,7 +115,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe_category = findViewById(R.id.recipe_category);
 
         //arraylist
-        listType = new ArrayList<>();
+        listCategory = new ArrayList<>();
         ingredients = new ArrayList<>();
         recipeSteps = new ArrayList<>();
 
@@ -262,9 +260,9 @@ public class AddRecipeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String item = dataSnapshot.getValue(String.class);
-                    listType.add(item);
+                    listCategory.add(item);
                 }
-                setSpinnerCategory(listType);
+                setSpinnerCategory(listCategory);
             }
 
             @Override
@@ -275,13 +273,13 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void setSpinnerCategory(List<String> lstCategory) {
-        ArrayAdapter<String> adapterType = new ArrayAdapter<String>(AddRecipeActivity.this, android.R.layout.simple_spinner_item, listType);
+        ArrayAdapter<String> adapterType = new ArrayAdapter<String>(AddRecipeActivity.this, android.R.layout.simple_spinner_item, listCategory);
         adapterType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         recipe_category.setAdapter(adapterType);
         recipe_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                category = listType.get(position);
+                category = listCategory.get(position);
             }
 
             @Override
@@ -308,7 +306,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     //process show items to recycleview for Ingredient
-    private void setIngredient(List<String> mList) {
+    private void setIngredientAdapter(List<String> mList) {
         ingredientAdapter = new IngredientAdapter(AddRecipeActivity.this, mList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(AddRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
         recycle_ingredients.setLayoutManager(gridLayoutManager);
@@ -359,5 +357,11 @@ public class AddRecipeActivity extends AppCompatActivity {
 //            }
 //        }
 //    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
 }

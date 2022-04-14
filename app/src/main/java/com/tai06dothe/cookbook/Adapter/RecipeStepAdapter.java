@@ -63,6 +63,13 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Vi
             btn_edit_recipestep = itemView.findViewById(R.id.btn_edit_recipestep);
             btn_delete_recipestep = itemView.findViewById(R.id.btn_delete_recipestep);
 
+            btn_edit_recipestep.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+
             btn_delete_recipestep.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

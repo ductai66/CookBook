@@ -3,7 +3,6 @@ package com.tai06dothe.cookbook.Model;
 import java.io.Serializable;
 
 public class RecipeStep implements Serializable {
-    private String id;
     private String image;
     private String description;
 
@@ -13,20 +12,6 @@ public class RecipeStep implements Serializable {
     public RecipeStep(String image, String description) {
         this.image = image;
         this.description = description;
-    }
-
-    public RecipeStep(String id, String image, String description) {
-        this.id = id;
-        this.image = image;
-        this.description = description;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getImage() {

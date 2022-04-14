@@ -14,7 +14,6 @@
       android:layout_height="wrap_content">
     <TextView
         android:id="@+id/title_viewmore"
-        android:text="Công thức các món xào"
         android:textColor="#F9FAF1"
         android:textSize="18sp"
         style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"

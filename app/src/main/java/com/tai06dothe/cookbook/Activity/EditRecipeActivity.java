@@ -62,14 +62,12 @@ public class EditRecipeActivity extends AppCompatActivity {
     private static final StorageReference reference = FirebaseStorage.getInstance().getReference();
     private Uri imageUri, imageStepUri;
 
-    private List<String> listType;
-    private List<String> ingredients;
-    private List<RecipeStep> recipeSteps;
+    private List<String> listCategory;
     private Boolean check = Boolean.FALSE;
     private String category;
-    private String id_user;
-    private String id_recipe;
-    private String linkImage;
+    private Recipe recipe;
+    private List<String> ingredients;
+    private List<RecipeStep> recipeSteps;
 
     private IngredientAdapter ingredientAdapter;
     private RecipeStepAdapter recipeStepAdapter;
@@ -79,11 +77,13 @@ public class EditRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_recipe);
         init();
-        processCategory();
+        // get
         getRecipe();
+        // process
+        processCategory();
         processIngredient();
-        processEvent();
 
+        processEvent();
     }
 
     private void init() {
@@ -111,14 +111,12 @@ public class EditRecipeActivity extends AppCompatActivity {
         //spinner
         recipe_category = findViewById(R.id.recipe_category);
 
-        //arraylist
-        listType = new ArrayList<>();
-        ingredients = new ArrayList<>();
-        recipeSteps = new ArrayList<>();
+        //arraylist category
+        listCategory = new ArrayList<>();
 
-        Intent intent = getIntent();
-        id_user = intent.getStringExtra("userId");
-        id_recipe = intent.getStringExtra("recipeId");
+        recipe = (Recipe) getIntent().getSerializableExtra("recipe");
+        ingredients = recipe.getIngredientList();
+        recipeSteps = recipe.getRecipeStepList();
     }
 
     private void processEvent(){
@@ -142,7 +140,6 @@ public class EditRecipeActivity extends AppCompatActivity {
         btn_add_image_step.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                check = Boolean.TRUE;
 //                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //                startActivityForResult(intent, 3);
                 Intent galleryIntent = new Intent();
@@ -164,8 +161,9 @@ public class EditRecipeActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (check == true){
                     uploadImage(imageUri, UPLOAD_RECIPE);
+                    return;
                 }
-                uploadRecipe(linkImage);
+                uploadRecipe(recipe.getRecipeImage());
             }
         });
     }
@@ -222,9 +220,15 @@ public class EditRecipeActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String item = dataSnapshot.getValue(String.class);
-                    listType.add(item);
+                    listCategory.add(item);
                 }
                 setSpinnerCategory();
+                for (int i = 0; i<= listCategory.size(); i++){
+                    if (listCategory.get(i).equals(recipe.getCategoryId())){
+                        recipe_category.setSelection(i);
+                        break;
+                    }
+                }
             }
 
             @Override
@@ -234,65 +238,50 @@ public class EditRecipeActivity extends AppCompatActivity {
         });
     }
 
-    private void getRecipe(){
-        DatabaseReference rootRecipe = mDatabase.child("Recipe").child(id_recipe);
-        rootRecipe.addValueEventListener(new ValueEventListener() {
+    private void setSpinnerCategory() {
+        ArrayAdapter<String> adapterType = new ArrayAdapter<String>(EditRecipeActivity.this, android.R.layout.simple_spinner_item, listCategory);
+        adapterType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        recipe_category.setAdapter(adapterType);
+        recipe_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                linkImage = snapshot.child("recipeImage").getValue().toString();
-                Picasso.get().load(linkImage).into(img_recipe);
-                name_recipe.setText(snapshot.child("recipeName").getValue().toString());
-                for (int i = 0; i<= listType.size(); i++){
-                    if (listType.get(i).equals(snapshot.child("categoryId").getValue().toString())){
-                        recipe_category.setSelection(i);
-                        break;
-                    }
-                }
-                List<String> ingredientList = new ArrayList<>();
-                for (DataSnapshot dataSnapshot : snapshot.child("ingredientList").getChildren()){
-                    String item = dataSnapshot.getValue(String.class);
-                    ingredientList.add(item);
-                    setIngredient(ingredientList);
-                }
-                ingredients = ingredientList;
-
-                List<RecipeStep> recipeStepList = new ArrayList<>();
-                for (DataSnapshot dataSnapshot : snapshot.child("recipeStepList").getChildren()){
-                    RecipeStep recipeStep = dataSnapshot.getValue(RecipeStep.class);
-                    recipeStepList.add(recipeStep);
-                    setRecipeStepAdapter(recipeStepList);
-                }
-
-                recipeSteps = recipeStepList;
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                category = listCategory.get(position);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(EditRecipeActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
+    }
+
+    private void getRecipe(){
+        Picasso.get().load(recipe.getRecipeImage()).into(img_recipe);
+        name_recipe.setText(recipe.getRecipeName());
+        setIngredientAdapter(recipe.getIngredientList());
+        setRecipeStepAdapter(recipe.getRecipeStepList());
     }
 
     private void uploadRecipe(String imageUrl) {
         String nameRecipe = String.valueOf(name_recipe.getText());
         DatabaseReference rootRecipe = mDatabase.child("Recipe");
-        String id = id_recipe;
 
-        Recipe recipe = new Recipe();
-        recipe.setRecipeId(id_recipe);
-        recipe.setRecipeName(nameRecipe);
-        recipe.setRecipeImage(imageUrl);// IF USER CHANGES IMAGE, IT IS imageUrl. ELSE It is image now
-        recipe.setIngredientList(ingredients);
-        recipe.setRecipeStepList(recipeSteps);
-        recipe.setCategoryId(category);
-        recipe.setUserId(id_user);
+        Recipe recipeUpload = new Recipe();
+        recipeUpload.setRecipeId(recipe.getRecipeId());
+        recipeUpload.setRecipeName(nameRecipe);
+        recipeUpload.setRecipeImage(imageUrl);
+        recipeUpload.setIngredientList(ingredients);
+        recipeUpload.setRecipeStepList(recipeSteps);
+        recipeUpload.setCategoryId(category);
+        recipeUpload.setUserId(recipe.getUserId());
 
-        if (id != null)
-            rootRecipe.child(id_recipe).setValue(recipe).addOnCompleteListener(new OnCompleteListener<Void>() {
+        if (recipe.getRecipeId() != null)
+            rootRecipe.child(recipe.getRecipeId()).setValue(recipeUpload).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Toast.makeText(EditRecipeActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(EditRecipeActivity.this, MyRecipeActivity.class);
+                    intent.putExtra("userId", recipe.getUserId());
                     startActivity(intent);
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -301,23 +290,6 @@ public class EditRecipeActivity extends AppCompatActivity {
                     Toast.makeText(EditRecipeActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
                 }
             });
-    }
-
-    private void setSpinnerCategory() {
-        ArrayAdapter<String> adapterType = new ArrayAdapter<String>(EditRecipeActivity.this, android.R.layout.simple_spinner_item, listType);
-        adapterType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        recipe_category.setAdapter(adapterType);
-        recipe_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                category = listType.get(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
 
     // process add nguyen lieu cho recipe
@@ -336,8 +308,8 @@ public class EditRecipeActivity extends AppCompatActivity {
         });
     }
 
-    //process show items to recycleview for Ingredient
-    private void setIngredient(List<String> mList) {
+    // process show items to recycleview for Ingredient
+    private void setIngredientAdapter(List<String> mList) {
         ingredientAdapter = new IngredientAdapter(EditRecipeActivity.this, mList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(EditRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
         recycle_ingredients.setLayoutManager(gridLayoutManager);
@@ -391,19 +363,10 @@ public class EditRecipeActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if ((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK && data != null) {
-//            System.out.println("========================================PASS 1");
-//            if (check) {
-//                System.out.println("========================================PASS 2");
-//                imageUri = data.getData();
-//                img_recipe.setImageURI(imageUri);
-//            } else {
-//                imageStepUri = data.getData();
-//                img_show.setImageURI(imageStepUri);
-//            }
-//        }
-//    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
+
 }

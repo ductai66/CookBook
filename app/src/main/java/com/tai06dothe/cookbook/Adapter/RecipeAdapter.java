@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 import com.tai06dothe.cookbook.Activity.MainActivity;
+import com.tai06dothe.cookbook.Activity.ViewmoreActivity;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.R;
 
@@ -67,6 +68,22 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             recipeImage = itemView.findViewById(R.id.recipeImage);
             img_user = itemView.findViewById(R.id.img_user);
             checkFavorite = itemView.findViewById(R.id.checkFavorite);
+
+            userName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Recipe recipe = mList.get(getAdapterPosition());
+                    ((MainActivity) mContext).showInfoUser(recipe);
+                }
+            });
+
+            recipeImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Recipe recipe = mList.get(getAdapterPosition());
+                    ((MainActivity) mContext).showRecipe(recipe);
+                }
+            });
 
             checkFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override

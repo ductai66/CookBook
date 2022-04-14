@@ -223,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
             case R.id.search_bar:
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.putExtra("userId", id_user);
                 startActivity(intent);
                 return true;
             default:
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void showViewmore(String id_category) {
         Intent intent = new Intent(MainActivity.this, ViewmoreActivity.class);
-        intent.putExtra("CategoryId", id_category);
+        intent.putExtra("categoryId", id_category);
         intent.putExtra("userId", id_user);
         startActivity(intent);
     }
@@ -275,6 +276,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+    }
+
+    public void showRecipe(Recipe recipe) {
+        Intent intent = new Intent(MainActivity.this, DetailRecipeActivity.class);
+        intent.putExtra("userId", id_user);
+        intent.putExtra("recipe", recipe);
+        startActivity(intent);
+    }
+
+    public void showInfoUser(Recipe recipe) {
+        Intent intent = new Intent(MainActivity.this, InfoUserActivity.class);
+        intent.putExtra("recipe", recipe);
+        startActivity(intent);
     }
 
     public void checkFavorite(CheckBox checkFavorite, String id_recipe) {

@@ -22,6 +22,7 @@
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_detail_recipe.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_edit_recipe.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_home.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_info_user.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_login.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/activity_my_recipe.xml" value="0.25416666666666665" />
@@ -34,8 +35,12 @@
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/fragment_first.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/fragment_second.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_category_recipes.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_comment.xml" value="0.25025641025641027" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_myrecipe.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_recipe.xml" value="0.25416666666666665" />
+        <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_recipestep.xml" value="0.25025641025641027" />
+        <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_recipestep_detail.xml" value="0.25025641025641027" />
+        <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/layout/layout_item_recipeuser.xml" value="0.25416666666666665" />
         <entry key="..\:/Android/CB Versions/NOW/CookBook/app/src/main/res/menu/nav_menu.xml" value="0.25416666666666665" />
         <entry key="..\:/BTAndroid/CookBook/app/src/main/res/drawable-v24/ic_360.xml" value="0.1885" />
         <entry key="..\:/BTAndroid/CookBook/app/src/main/res/drawable-v24/ic_email.xml" value="0.2585" />
@@ -77,7 +82,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
