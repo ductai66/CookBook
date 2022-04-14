@@ -5,11 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,22 +29,33 @@ import com.tai06dothe.cookbook.Adapter.DetailRecipe.IngredientDetailAdapter;
 import com.tai06dothe.cookbook.Adapter.DetailRecipe.RecipeStepDetailAdapter;
 import com.tai06dothe.cookbook.Adapter.IngredientAdapter;
 import com.tai06dothe.cookbook.Adapter.RecipeStepAdapter;
+import com.tai06dothe.cookbook.Model.Comment;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.Model.RecipeStep;
 import com.tai06dothe.cookbook.Model.User;
 import com.tai06dothe.cookbook.R;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class DetailRecipeActivity extends AppCompatActivity {
+
+    TextInputEditText etxt_comment;
     ImageView recipeImageDetail;
+    ImageButton send_add_comment;
     TextView recipeNameDetail;
-    RecyclerView recycle_ingredients, recycle_recipeSteps;
-    Recipe recipe;
-    IngredientDetailAdapter ingredientDetailAdapter;
-    RecipeStepDetailAdapter recipeStepDetailAdapter;
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    RecyclerView recycle_ingredients, recycle_recipeSteps, recycle_comment;
+
+    private String id_user;
+
+    private Recipe recipe;
+    private IngredientDetailAdapter ingredientDetailAdapter;
+    private RecipeStepDetailAdapter recipeStepDetailAdapter;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +63,23 @@ public class DetailRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_recipe);
         init();
         getRecipe();
+        processEvent();
     }
 
     private void init(){
+        send_add_comment = findViewById(R.id.send_add_comment);
+        etxt_comment = findViewById(R.id.etxt_comment);
+        recycle_comment = findViewById(R.id.recycle_comment);
+
         recipeImageDetail = (ImageView) findViewById(R.id.recipeImageDetail);
         recipeNameDetail = (TextView) findViewById(R.id.recipeNameDetail);
         recycle_ingredients = (RecyclerView) findViewById(R.id.recycle_ingredients);
         recycle_recipeSteps = (RecyclerView) findViewById(R.id.recycle_recipeSteps);
 
         recipe = (Recipe) getIntent().getSerializableExtra("recipe");
+
+        Intent intent = getIntent();
+        id_user = intent.getStringExtra("userId");
     }
 
     private void getRecipe(){
@@ -84,7 +112,7 @@ public class DetailRecipeActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     String item = dataSnapshot.getValue(String.class);
                     ingredientList.add(item);
-                    setIngredient(ingredientList);
+                    setIngredientAdapter(ingredientList);
                     ingredientDetailAdapter.notifyDataSetChanged();
                 }
             }
@@ -95,7 +123,7 @@ public class DetailRecipeActivity extends AppCompatActivity {
         });
     }
 
-    private void setIngredient(List<String> mList) {
+    private void setIngredientAdapter(List<String> mList) {
         ingredientDetailAdapter = new IngredientDetailAdapter(DetailRecipeActivity.this, mList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DetailRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
         recycle_ingredients.setLayoutManager(gridLayoutManager);
@@ -133,5 +161,64 @@ public class DetailRecipeActivity extends AppCompatActivity {
         recycle_recipeSteps.setHasFixedSize(true);
     }
 
+    // add feature comment
+    private void processEvent() {
+        etxt_comment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length()>0){
+                    send_add_comment.setVisibility(View.VISIBLE);
+                }else {
+                    send_add_comment.setVisibility(View.GONE);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        send_add_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkComment();
+            }
+        });
+    }
+
+    private void checkComment() {
+        String content = etxt_comment.getText().toString().trim();
+
+        if (TextUtils.isEmpty(content)) {
+            Toast.makeText(this, "Please enter comment !", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // process add comment
+        addComment(content);
+    }
+
+    private void addComment(String content) {
+        String key = mDatabase.push().getKey();
+
+        Comment comment = new Comment();
+        comment.setCommentId(key);
+        comment.setContent(content);
+        comment.setImage(recipe.getRecipeImage());
+        comment.setUserId(id_user);
+        comment.setRecipeId(recipe.getRecipeId());
+
+        Date date = new Date();
+        Timestamp ts = new Timestamp(date.getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // set time for create at
+        comment.setCreateAt(formatter.format(ts));
+
+        DatabaseReference rootAddComment = mDatabase.child("Comment");
+        rootAddComment.child(key).setValue(comment);
+
+        Toast.makeText(this, "Add comment success", Toast.LENGTH_SHORT).show();
+    }
 }
