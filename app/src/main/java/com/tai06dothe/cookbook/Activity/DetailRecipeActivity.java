@@ -1,22 +1,20 @@
 package com.tai06dothe.cookbook.Activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DataSnapshot;
@@ -29,12 +27,9 @@ import com.squareup.picasso.Picasso;
 import com.tai06dothe.cookbook.Adapter.CommentAdapter;
 import com.tai06dothe.cookbook.Adapter.DetailRecipe.IngredientDetailAdapter;
 import com.tai06dothe.cookbook.Adapter.DetailRecipe.RecipeStepDetailAdapter;
-import com.tai06dothe.cookbook.Adapter.IngredientAdapter;
-import com.tai06dothe.cookbook.Adapter.RecipeStepAdapter;
 import com.tai06dothe.cookbook.Model.Comment;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.Model.RecipeStep;
-import com.tai06dothe.cookbook.Model.User;
 import com.tai06dothe.cookbook.R;
 
 import java.sql.Timestamp;
@@ -42,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -87,7 +81,6 @@ public class DetailRecipeActivity extends AppCompatActivity {
 
         ingredients = recipe.getIngredientList();
         recipeSteps = recipe.getRecipeStepList();
-        comments = new ArrayList<>();
 
         Intent intent = getIntent();
         id_user = intent.getStringExtra("userId");
@@ -104,9 +97,10 @@ public class DetailRecipeActivity extends AppCompatActivity {
         DatabaseReference rootComment = mDatabase.child("Comment");
         Query firebaseQueryComments = rootComment.orderByChild("recipeId").equalTo(recipe.getRecipeId());
 
-        firebaseQueryComments.addValueEventListener(new ValueEventListener() {
+        firebaseQueryComments.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                comments = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Comment comment = dataSnapshot.getValue(Comment.class);
                     comments.add(comment);
@@ -136,7 +130,7 @@ public class DetailRecipeActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(DetailRecipeActivity.this, 1, GridLayoutManager.VERTICAL, false);
         recycle_recipeSteps.setLayoutManager(gridLayoutManager);
         recycle_recipeSteps.setAdapter(recipeStepDetailAdapter);
-        recycle_recipeSteps.setNestedScrollingEnabled(true);
+        recycle_recipeSteps.setNestedScrollingEnabled(false);
         recycle_recipeSteps.setHasFixedSize(true);
     }
 
