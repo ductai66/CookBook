@@ -11,12 +11,12 @@ public class Recipe implements Serializable {
     private List<RecipeStep> recipeStepList;
     private String categoryId;
     private String userId;
-    private int status;
+    private int favoriteNumber;
 
     public Recipe() {
     }
 
-    public Recipe(String recipeId, String recipeName, String recipeImage, List<String> ingredientList, List<RecipeStep> recipeStepList, String categoryId, String userId, int status) {
+    public Recipe(String recipeId, String recipeName, String recipeImage, List<String> ingredientList, List<RecipeStep> recipeStepList, String categoryId, String userId, int favoriteNumber) {
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.recipeImage = recipeImage;
@@ -24,7 +24,7 @@ public class Recipe implements Serializable {
         this.recipeStepList = recipeStepList;
         this.categoryId = categoryId;
         this.userId = userId;
-        this.status = status;
+        this.favoriteNumber = favoriteNumber;
     }
 
     public String getRecipeId() {
@@ -83,11 +83,11 @@ public class Recipe implements Serializable {
         this.userId = userId;
     }
 
-    public int getStatus() {
-        return status;
+    public int getFavoriteNumber() {
+        return favoriteNumber;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setFavoriteNumber(int favoriteNumber) {
+        this.favoriteNumber = favoriteNumber;
     }
 }

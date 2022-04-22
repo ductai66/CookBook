@@ -16,6 +16,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
+import com.tai06dothe.cookbook.Activity.EditRecipeActivity;
+import com.tai06dothe.cookbook.Activity.MainActivity;
+import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.Model.RecipeStep;
 import com.tai06dothe.cookbook.R;
 
@@ -66,6 +69,9 @@ public class RecipeStepAdapter extends RecyclerView.Adapter<RecipeStepAdapter.Vi
             btn_edit_recipestep.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    int i = getAdapterPosition();
+                    RecipeStep recipeStep = mListRecipeStep.get(i);
+                    ((EditRecipeActivity)mContext).editDialog(recipeStep.getImage(), recipeStep.getDescription(), i);
 
                 }
             });

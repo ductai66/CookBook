@@ -3,31 +3,36 @@
     android:layout_marginTop="12dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <TextView
-        android:id="@+id/txt_number_step"
-        android:textSize="18sp"
-        android:textColor="#000"
-        android:textStyle="bold"
+    android:orientation="vertical">
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1" />
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/txt_number_step"
+            android:text="Bước 1"
+            android:textSize="18sp"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <TextView
-        android:id="@+id/item_description_recipestep"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:lineSpacingMultiplier="5"
-        android:textSize="18sp"
-        android:textColor="#000"
-        android:text="mo ta" />
+        <TextView
+            android:id="@+id/item_description_recipestep"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:textSize="18sp"
+            android:textColor="#000"
+            android:text="mo ta" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/item_image_recipestep"
         android:scaleType="centerInside"
-        android:layout_width="0dp"
+        android:layout_margin="16dp"
+        android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_weight="3" />
 

@@ -3,12 +3,14 @@ package com.tai06dothe.cookbook.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -42,7 +44,9 @@ import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.Model.RecipeStep;
 import com.tai06dothe.cookbook.R;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +55,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private static final int UPLOAD_RECIPE = 1;
     private static final int UPLOAD_RECIPE_STEP = 2;
 
+    Toolbar toolbar_addrecipe;
     TextInputEditText name_recipe, name_ingredient, name_step;
     ImageView img_recipe, img_show;
     ImageButton btn_add_ingredient, btn_add_image_step, btn_add_step;
@@ -68,6 +73,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private Boolean check = Boolean.FALSE;
     private String category;
     private String id_user;
+    private String text_button;
 
     private IngredientAdapter ingredientAdapter;
     private RecipeStepAdapter recipeStepAdapter;
@@ -90,6 +96,11 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void init() {
+        toolbar_addrecipe = findViewById(R.id.toolbar_addrecipe);
+        setSupportActionBar(toolbar_addrecipe);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // text
         name_recipe = findViewById(R.id.name_recipe);
         name_ingredient = findViewById(R.id.name_ingredient);
@@ -124,55 +135,106 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     private void processEvent() {
-        btn_add_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                check = Boolean.TRUE;
-                selectImage();
-            }
-        });
-
         btn_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 check = Boolean.TRUE;
+                text_button = btn_camera.getText().toString().trim();
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent, 1);
+            }
+        });
+
+        btn_add_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                check = Boolean.TRUE;
+                text_button = btn_add_photo.getText().toString().trim();
+                selectImage(2);
             }
         });
 
         btn_add_image_step.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                check = Boolean.TRUE;
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 3);
+                selectImage(3);
             }
         });
 
         btn_add_step.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadImage(imageStepUri, UPLOAD_RECIPE_STEP);
+                uploadImage_photo(imageStepUri, UPLOAD_RECIPE_STEP);
             }
         });
 
         btn_insert_recipe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uploadImage(imageUri, UPLOAD_RECIPE);
+                if (check == true) {
+                    if (text_button.contentEquals("Thư viện")) {
+                        uploadImage_photo(imageUri, UPLOAD_RECIPE);
+                    }
+                    if (text_button.contentEquals("Chụp ảnh")) {
+                        uploadImage_camera(img_recipe, UPLOAD_RECIPE);
+                    }
+                } else {
+                    Toast.makeText(AddRecipeActivity.this, "Vui lòng thêm ảnh", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private void selectImage() {
+    private void selectImage(int request) {
         Intent galleryIntent = new Intent();
         galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
         galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, 2);
+        startActivityForResult(galleryIntent, request);
     }
 
-    private void uploadImage(Uri uri, int option) {
+    private void uploadImage_camera(ImageView imageView, int option) {
+        if (imageView != null) {
+            Calendar calendar = Calendar.getInstance();
+            StorageReference fileRef = reference.child("image" + calendar.getTimeInMillis() + ".png");
+
+            imageView.setDrawingCacheEnabled(true);
+            imageView.buildDrawingCache();
+            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] data = baos.toByteArray();
+
+            UploadTask uploadTask = fileRef.putBytes(data);
+            uploadTask.addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    taskSnapshot.getStorage().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Uri> task) {
+                            String imageUrl = task.getResult().toString();
+                            switch (option) {
+                                case UPLOAD_RECIPE:
+                                    uploadRecipe(imageUrl);
+                                    break;
+                                case UPLOAD_RECIPE_STEP:
+                                    uploadRecipeStep(imageUrl);
+                                    break;
+                            }
+                        }
+                    });
+                }
+            });
+        } else {
+            Toast.makeText(this, "Please select image for ?", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void uploadImage_photo(Uri uri, int option) {
         if (uri != null) {
             StorageReference fileRef = reference.child(System.currentTimeMillis() + "." + getFileExtendsion(uri));
             fileRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -223,12 +285,16 @@ public class AddRecipeActivity extends AppCompatActivity {
         recipe.setRecipeStepList(recipeSteps);
         recipe.setCategoryId(category);
         recipe.setUserId(id_user);
+        recipe.setFavoriteNumber(0);
 
-        if (id != null)
+        if (id != null && !name_recipe.getText().toString().isEmpty() && !ingredients.isEmpty() && !recipeSteps.isEmpty()){
             rootRecipe.child(id).setValue(recipe).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Toast.makeText(AddRecipeActivity.this, "Thêm thành công", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(AddRecipeActivity.this, MyRecipeActivity.class);
+                    intent.putExtra("userId", recipe.getUserId());
+                    startActivity(intent);
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -236,6 +302,17 @@ public class AddRecipeActivity extends AppCompatActivity {
                     Toast.makeText(AddRecipeActivity.this, "Lỗi", Toast.LENGTH_SHORT).show();
                 }
             });
+        }
+        else if (name_recipe.getText().toString().isEmpty()){
+            Toast.makeText(this, "Bạn chưa nhập tên công thức", Toast.LENGTH_SHORT).show();
+        }
+        else if (ingredients.isEmpty()){
+            Toast.makeText(this, "Bạn chưa nhập nguyên liệu", Toast.LENGTH_SHORT).show();
+        }
+        else if (recipeSteps.isEmpty()){
+            Toast.makeText(this, "Bạn chưa nhập cách làm", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private void uploadRecipeStep(String imageUrl) {
@@ -298,6 +375,8 @@ public class AddRecipeActivity extends AppCompatActivity {
                 if (!"".equals(value)) {
                     ingredients.add(value);
                     ingredientAdapter.notifyDataSetChanged();
+                    name_ingredient.getText().clear();
+                    Toast.makeText(AddRecipeActivity.this, value + " đã được thêm vào danh sách", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(AddRecipeActivity.this, "Khong dc de trong", Toast.LENGTH_SHORT).show();
                 }
@@ -331,32 +410,16 @@ public class AddRecipeActivity extends AppCompatActivity {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             img_recipe.setImageBitmap(bitmap);
         }
-        if (requestCode == 2 && resultCode == RESULT_OK && data !=null){
+        if (requestCode == 2 && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
             img_recipe.setImageURI(imageUri);
         }
-        if (requestCode == 3 && resultCode == RESULT_OK && data != null){
-            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-            img_show.setImageBitmap(bitmap);
+        if (requestCode == 3 && resultCode == RESULT_OK && data != null) {
+            imageStepUri = data.getData();
+            img_show.setImageURI(imageStepUri);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if ((requestCode == 1 || requestCode == 2) && resultCode == RESULT_OK && data != null) {
-//            System.out.println("========================================PASS 1");
-//            if (check) {
-//                System.out.println("========================================PASS 2");
-//                imageUri = data.getData();
-//                img_recipe.setImageURI(imageUri);
-//            } else {
-//                imageStepUri = data.getData();
-//                img_show.setImageURI(imageStepUri);
-//            }
-//        }
-//    }
 
     @Override
     public boolean onSupportNavigateUp() {

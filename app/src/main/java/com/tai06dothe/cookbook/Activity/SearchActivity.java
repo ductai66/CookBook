@@ -158,6 +158,7 @@ public class SearchActivity extends AppCompatActivity {
                    if (allRecipe.get(i).getRecipeName().toLowerCase().contains(searchText)) {
                        recipes.add(allRecipe.get(i));
                        searchAdapter.notifyDataSetChanged();
+                       empty_search.setVisibility(View.GONE);
                    }
                    else {
                        empty_search.setVisibility(View.VISIBLE);

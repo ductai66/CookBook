@@ -2,6 +2,7 @@ package com.tai06dothe.cookbook.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,7 +48,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DetailRecipeActivity extends AppCompatActivity {
-
+    Toolbar toolbar_detail;
     TextInputEditText etxt_comment;
     ImageView recipeImageDetail;
     ImageButton send_add_comment;
@@ -74,6 +75,11 @@ public class DetailRecipeActivity extends AppCompatActivity {
     }
 
     private void init() {
+        toolbar_detail = findViewById(R.id.toolbar_detail);
+        setSupportActionBar(toolbar_detail);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         send_add_comment = findViewById(R.id.send_add_comment);
         etxt_comment = findViewById(R.id.etxt_comment);
         recycle_comment = findViewById(R.id.recycle_comment);
@@ -107,11 +113,12 @@ public class DetailRecipeActivity extends AppCompatActivity {
         firebaseQueryComments.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Comment> commentList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Comment comment = dataSnapshot.getValue(Comment.class);
-                    comments.add(comment);
+                    commentList.add(comment);
                 }
-                setCommentAdapter(comments);
+                setCommentAdapter(commentList);
                 commentAdapter.notifyDataSetChanged();
             }
 

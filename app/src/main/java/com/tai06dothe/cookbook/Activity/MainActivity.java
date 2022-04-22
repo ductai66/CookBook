@@ -300,7 +300,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Favorite favorite = dataSnapshot.getValue(Favorite.class);
                     if (favorite != null && id_recipe.equals(favorite.getRecipeId())) {
-                        checkFavorite.setChecked(Boolean.TRUE);
                         checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
                         break;
                     }
@@ -327,6 +326,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (key != null) {
             rootAddFavorite.child(key).setValue(addFavorite);
         }
+        // process update number favorite for recipe
+        DatabaseReference rootNumberFavoriteRecipe = mDatabase.child("Recipe").child(recipe.getRecipeId());
+        rootNumberFavoriteRecipe.child("favoriteNumber").setValue(recipe.getFavoriteNumber());
 
         checkFavorite.setChecked(Boolean.TRUE);
         checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
@@ -334,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toast.makeText(MainActivity.this, "Them favorite thanh cong", Toast.LENGTH_SHORT).show();
     }
 
-    public void removeRecipeFromFavorite(String recipeId, CheckBox checkFavorite) {
+    public void removeRecipeFromFavorite(Recipe recipe, CheckBox checkFavorite) {
         DatabaseReference rootRemoveFavorite = mDatabase.child("Favorite");
 
         Query firebaseQuery = rootRemoveFavorite.orderByChild("userId").equalTo(id_user);
@@ -343,8 +345,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Favorite favorite = dataSnapshot.getValue(Favorite.class);
-                    if (favorite != null && favorite.getRecipeId().equalsIgnoreCase(recipeId)) {
+                    if (favorite != null && favorite.getRecipeId().equalsIgnoreCase(recipe.getRecipeId())) {
                         rootRemoveFavorite.child(favorite.getFavoriteId()).removeValue();
+
+                        // process update number favorite for recipe
+                        DatabaseReference rootNumberFavoriteRecipe = mDatabase.child("Recipe").child(recipe.getRecipeId());
+                        rootNumberFavoriteRecipe.child("favoriteNumber").setValue(recipe.getFavoriteNumber());
+
                         checkFavorite.setChecked(Boolean.FALSE);
                         checkFavorite.setBackgroundResource(R.drawable.ic_favorite);
                         Toast.makeText(MainActivity.this, "Xoa khoi danh sach yeu thic cua ban", Toast.LENGTH_SHORT).show();

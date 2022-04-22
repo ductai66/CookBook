@@ -24,7 +24,7 @@
             android:textSize="18sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -73,6 +73,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_ingredients"
+                    android:nestedScrollingEnabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -94,13 +95,14 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_recipeSteps"
+                    android:nestedScrollingEnabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -115,8 +117,8 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/shape_layout_edittext"
                         android:hint="Bình luận"
-                        android:inputType="text"
-                        android:maxLines="10"
+                        android:inputType="textMultiLine"
+                        android:maxLength="20"
                         android:paddingLeft="20dp" />
 
                     <ImageButton
@@ -133,11 +135,12 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_comment"
+                    android:nestedScrollingEnabled="false"
                     android:layout_marginBottom="100dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </LinearLayout>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

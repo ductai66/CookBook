@@ -3,6 +3,7 @@ package com.tai06dothe.cookbook.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyRecipeActivity extends AppCompatActivity {
-
+    Toolbar toolbar_myrecipe;
     RecyclerView recycle_myRecipe;
     MyRecipeAdapter myRecipeAdapter;
     Button btn_add_recipe;
@@ -50,6 +51,11 @@ public class MyRecipeActivity extends AppCompatActivity {
     }
 
     private void init(){
+        toolbar_myrecipe = findViewById(R.id.toolbar_myrecipe);
+        setSupportActionBar(toolbar_myrecipe);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         btn_add_recipe = findViewById(R.id.btn_add_recipe);
         recycle_myRecipe = findViewById(R.id.recycle_myRecipe);
     }

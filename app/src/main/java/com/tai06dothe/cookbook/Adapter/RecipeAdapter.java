@@ -41,13 +41,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecipeAdapter.ViewHolder holder, int position) {
         Recipe item = mList.get(position);
-        ((MainActivity)mContext).getInfoUser(holder.userName, holder.img_user, item.getUserId());
-
+        ((MainActivity) mContext).getInfoUser(holder.userName, holder.img_user, item.getUserId());
+        holder.numberFavorite.setText(String.valueOf(item.getFavoriteNumber()));
         holder.recipeName.setText(item.getRecipeName());
         Picasso.get().load(item.getRecipeImage()).into(holder.recipeImage);
 
         // check favorite
-        ((MainActivity)mContext).checkFavorite(holder.checkFavorite, item.getRecipeId());
+        ((MainActivity) mContext).checkFavorite(holder.checkFavorite, item.getRecipeId());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView recipeName, userName;
+        TextView recipeName, userName, numberFavorite;
         ImageView recipeImage;
         CircleImageView img_user;
         CheckBox checkFavorite;
@@ -68,6 +68,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             recipeImage = itemView.findViewById(R.id.recipeImage);
             img_user = itemView.findViewById(R.id.img_user);
             checkFavorite = itemView.findViewById(R.id.checkFavorite);
+            numberFavorite = itemView.findViewById(R.id.numberFavorite);
 
             userName.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -92,9 +93,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                     int position = getAdapterPosition();
                     Recipe recipe = mList.get(position);
                     if (!isCheck) {
-                        ((MainActivity)mContext).removeRecipeFromFavorite(recipe.getRecipeId(), checkFavorite);
+                        recipe.setFavoriteNumber(recipe.getFavoriteNumber() - 1);
+                        ((MainActivity) mContext).removeRecipeFromFavorite(recipe, checkFavorite);
+                        numberFavorite.setText(String.valueOf(recipe.getFavoriteNumber()));
                     } else {
-                        ((MainActivity)mContext).addRecipeToFavorite(recipe, checkFavorite);
+                        recipe.setFavoriteNumber(recipe.getFavoriteNumber() + 1);
+                        ((MainActivity) mContext).addRecipeToFavorite(recipe, checkFavorite);
+                        numberFavorite.setText(String.valueOf(recipe.getFavoriteNumber()));
                     }
                 }
             });

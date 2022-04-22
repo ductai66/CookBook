@@ -3,6 +3,7 @@ package com.tai06dothe.cookbook.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecipeFavoriteActivity extends AppCompatActivity {
+    Toolbar toolbar_favorite;
     private RecyclerView recycle_recipeFavorite;
     private RecipeFavoriteAdapter recipeFavoriteAdapter;
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -41,12 +43,16 @@ public class RecipeFavoriteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_favorite);
         init();
-        getAdapter();
+        getAdapterFavorite();
     }
 
     private void init(){
+        toolbar_favorite = findViewById(R.id.toolbar_favorite);
+        setSupportActionBar(toolbar_favorite);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         recycle_recipeFavorite = (RecyclerView) findViewById(R.id.recycle_recipeFavorite);
-        favoriteList = new ArrayList<>();
         Intent intent = getIntent();
         id_user = intent.getStringExtra("userId");
     }
@@ -60,14 +66,14 @@ public class RecipeFavoriteActivity extends AppCompatActivity {
         recipeFavoriteAdapter.notifyDataSetChanged();
     }
 
-    private void getAdapter() {
+    private void getAdapterFavorite() {
         DatabaseReference mRef = mDatabase.child("Favorite");
         Query firebaseQueryRecipes = mRef.orderByChild("userId").equalTo(id_user);
 
         firebaseQueryRecipes.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                List<Favorite> favoriteList = new ArrayList<>();
+                favoriteList = new ArrayList<>();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Favorite favorite = dataSnapshot.getValue(Favorite.class);
                     favoriteList.add(favorite);
@@ -84,11 +90,28 @@ public class RecipeFavoriteActivity extends AppCompatActivity {
     }
 
     public void removeFavorite(Favorite favorite) {
-        DatabaseReference mRef = mDatabase.child("Favorite").child(favorite.getFavoriteId());
-        mRef.removeValue(new DatabaseReference.CompletionListener() {
+        DatabaseReference rootFavorite = mDatabase.child("Favorite").child(favorite.getFavoriteId());
+//        DatabaseReference rootRecipe = mDatabase.child("Recipe").child(id_recipe);
+        rootFavorite.removeValue(new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 favoriteList.remove(favorite);
+
+                // process update number favorite for recipe
+                DatabaseReference rootNumberFavoriteRecipe = mDatabase.child("Recipe").child(favorite.getRecipeId());
+                rootNumberFavoriteRecipe.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Recipe recipe = snapshot.getValue(Recipe.class);
+                        rootNumberFavoriteRecipe.child("favoriteNumber").setValue(recipe.getFavoriteNumber() - 1);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
                 setAdapterFavorite(favoriteList);
                 recipeFavoriteAdapter.notifyDataSetChanged();
                 Toast.makeText(RecipeFavoriteActivity.this, "Xóa thành công khỏi danh sách yêu thích", Toast.LENGTH_SHORT).show();
@@ -96,12 +119,13 @@ public class RecipeFavoriteActivity extends AppCompatActivity {
         });
     }
 
-    public void getUserName(TextView txt_username, String id_user) {
-        mDatabase.child("User").child(id_user).addValueEventListener(new ValueEventListener() {
+    public void getnumberFavorite(TextView txt_number, String id_recipe) {
+        DatabaseReference rootRecipe = mDatabase.child("Recipe").child(id_recipe);
+        rootRecipe.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String username = snapshot.child("name").getValue().toString();
-                txt_username.setText(username);
+                String number = snapshot.child("favoriteNumber").getValue().toString();
+                txt_number.setText(number);
             }
 
             @Override
@@ -111,16 +135,19 @@ public class RecipeFavoriteActivity extends AppCompatActivity {
         });
     }
 
-    public void getImageUser(CircleImageView img_user, String id_user) {
+    public void getInfoUser(TextView txt_username, CircleImageView img_user, String id_user) {
         mDatabase.child("User").child(id_user).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String username = snapshot.child("name").getValue().toString();
+                txt_username.setText(username);
                 String img = snapshot.child("avatar").getValue().toString();
                 Picasso.get().load(img).into(img_user);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

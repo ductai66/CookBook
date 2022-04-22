@@ -27,6 +27,7 @@ import com.tai06dothe.cookbook.R;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -76,6 +77,13 @@ public class SignupActivity extends AppCompatActivity {
 
     private void checkSignup(String email, String password, String rePass, String name) {
         String userId = mDatabase.push().getKey();
+//        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\."+
+//                "[a-zA-Z0-9_+&*-]+)*@" +
+//                "(?:[a-zA-Z0-9-]+\\.)+[a-z" +
+//                "A-Z]{2,7}$";
+        String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+        Pattern pat = Pattern.compile(emailRegex);
 
         if (email.isEmpty()) {
             Toast.makeText(this, "Email không được để trống", Toast.LENGTH_SHORT).show();
@@ -93,6 +101,10 @@ public class SignupActivity extends AppCompatActivity {
             Toast.makeText(this, "Tên không được để trống", Toast.LENGTH_SHORT).show();
             isCheck = false;
         }
+        else if (!pat.matcher(email).matches()){
+            Toast.makeText(this, "Email không đúng định dạng", Toast.LENGTH_SHORT).show();
+            isCheck = false;
+        }
         else {
             checkUserExist(userId, email, password, name);
         }
@@ -100,18 +112,20 @@ public class SignupActivity extends AppCompatActivity {
 
     private void checkUserExist(String userId, String email, String password, String name) {
         DatabaseReference rootEmail = mDatabase.child("User");
-        rootEmail.addValueEventListener(new ValueEventListener() {
+        rootEmail.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     User user = dataSnapshot.getValue(User.class);
                     if (email.equalsIgnoreCase(user.getEmail())){
-                        isCheck = Boolean.FALSE;
+                        isCheck = false;
                         Toast.makeText(SignupActivity.this, "Email đã được sử dụng", Toast.LENGTH_SHORT).show();
-                        break;
+                    }
+                    else {
+                        isCheck = true;
                     }
                 }
-                if (isCheck == true) {
+                if (isCheck == true){
                     saveUser(userId, email, password, name);
                 }
             }

@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </androidx.appcompat.widget.Toolbar>
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
@@ -38,34 +38,34 @@
                     android:scaleType="fitCenter"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
-                <TableLayout
-                    android:padding="8dp"
-                    android:layout_gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TableRow android:gravity="center">
-                        <Button
-                            android:id="@+id/btn_add_photo"
-                            android:text="Thư viện"
-                            android:textAllCaps="false"
-                            android:textColor="#7A7878"
-                            android:layout_marginRight="32dp"
-                            android:background="@drawable/shape_tablayout"
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"/>
-                        <Button
-                            android:id="@+id/btn_camera"
-                            android:text="Chụp ảnh"
-                            android:textAllCaps="false"
-                            android:textColor="#7A7878"
-                            android:textAlignment="gravity"
-                            android:layout_marginLeft="32dp"
-                            android:background="@drawable/shape_tablayout"
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"/>
-                    </TableRow>
-                </TableLayout>
             </androidx.cardview.widget.CardView>
+            <TableLayout
+                android:padding="8dp"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TableRow android:gravity="center">
+                    <Button
+                        android:id="@+id/btn_add_photo"
+                        android:text="Thư viện"
+                        android:textAllCaps="false"
+                        android:textColor="#7A7878"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/shape_layout_button"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"/>
+                    <Button
+                        android:id="@+id/btn_camera"
+                        android:text="Chụp ảnh"
+                        android:textAllCaps="false"
+                        android:textColor="#7A7878"
+                        android:textAlignment="gravity"
+                        android:layout_marginLeft="20dp"
+                        android:background="@drawable/shape_layout_button"
+                        android:layout_width="150dp"
+                        android:layout_height="wrap_content"/>
+                </TableRow>
+            </TableLayout>
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -142,6 +142,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_ingredients"
+                    android:nestedScrollingEnabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
@@ -227,6 +228,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycle_recipeSteps"
+                    android:nestedScrollingEnabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -246,6 +248,6 @@
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

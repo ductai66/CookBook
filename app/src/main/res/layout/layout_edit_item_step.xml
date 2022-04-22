@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:orientation="vertical"
+    tools:context=".Activity.EditRecipeActivity">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/info_image"
+        android:layout_width="match_parent"
+        android:layout_height="225dp"
+        app:cardCornerRadius="16dp">
+
+        <ImageView
+            android:id="@+id/stepImage_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.cardview.widget.CardView>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="8dp">
+
+        <TableRow android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_add_photo_dialog"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/shape_layout_button"
+                android:text="Thư viện"
+                android:textAllCaps="false"
+                android:textColor="#7A7878" />
+
+            <Button
+                android:id="@+id/btn_camera_dialog"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/shape_layout_button"
+                android:text="Chụp ảnh"
+                android:textAlignment="gravity"
+                android:textAllCaps="false"
+                android:textColor="#7A7878" />
+        </TableRow>
+    </TableLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        app:errorEnabled="false"
+        app:hintEnabled="false">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/stepName_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_layout_edittext"
+            android:gravity="top"
+            android:hint="Nội dung bước"
+            android:inputType="textNoSuggestions|textMultiLine"
+            android:maxLength="255"
+            android:maxLines="10" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="8dp">
+
+        <TableRow android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_update_dialog"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/shape_layout_button"
+                android:text="Cập nhật"
+                android:textSize="16dp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:textColor="#fff" />
+
+            <Button
+                android:id="@+id/btn_cancel_dialog"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_layout_button"
+                android:text="Hủy"
+                android:textAllCaps="false"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </TableRow>
+    </TableLayout>
+</LinearLayout>

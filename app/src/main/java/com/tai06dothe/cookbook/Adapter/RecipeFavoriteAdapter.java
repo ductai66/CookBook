@@ -44,8 +44,8 @@ public class RecipeFavoriteAdapter extends RecyclerView.Adapter<RecipeFavoriteAd
         Favorite favorite = mListFavorite.get(position);
         holder.recipeName.setText(favorite.getRecipeName());
         Picasso.get().load(favorite.getRecipeImage()).into(holder.recipeImage);
-        ((RecipeFavoriteActivity)mContext).getUserName(holder.userName, favorite.getCreateById());
-        ((RecipeFavoriteActivity)mContext).getImageUser(holder.img_user, favorite.getCreateById());
+        ((RecipeFavoriteActivity)mContext).getInfoUser(holder.userName, holder.img_user, favorite.getCreateById());
+        ((RecipeFavoriteActivity)mContext).getnumberFavorite(holder.numberFavorite, favorite.getRecipeId());
         holder.checkFavorite.setBackgroundResource(R.drawable.ic_favorite_true);
         holder.checkFavorite.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -64,7 +64,7 @@ public class RecipeFavoriteAdapter extends RecyclerView.Adapter<RecipeFavoriteAd
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView userName, recipeName;
+        TextView userName, recipeName, numberFavorite;
         ImageView recipeImage;
         CircleImageView img_user;
         CheckBox checkFavorite;
@@ -75,6 +75,7 @@ public class RecipeFavoriteAdapter extends RecyclerView.Adapter<RecipeFavoriteAd
             recipeName = itemView.findViewById(R.id.recipeName);
             img_user = itemView.findViewById(R.id.img_user);
             checkFavorite = itemView.findViewById(R.id.checkFavorite);
+            numberFavorite = itemView.findViewById(R.id.numberFavorite);
         }
     }
 }
