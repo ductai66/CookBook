@@ -25,6 +25,9 @@ import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,7 +86,9 @@ public class ViewmoreActivity extends AppCompatActivity {
                     recipes.add(recipe);
                 }
                 title_viewmore.setText("Công thức các món " + id_category);
-                setAdapterViewMore(recipes);
+
+                List<Recipe> mList = sortListRecipe(recipes);
+                setAdapterViewMore(mList);
                 viewmoreAdapter.notifyDataSetChanged();
             }
 
@@ -92,6 +97,17 @@ public class ViewmoreActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private List<Recipe> sortListRecipe(List<Recipe> mList) {
+        List<Recipe> list = mList;
+        Collections.sort(list, new Comparator<Recipe>() {
+            @Override
+            public int compare(Recipe recipe1, Recipe recipe2) {
+                return recipe1.getRecipeName().toLowerCase().compareTo(recipe2.getRecipeName().toLowerCase());
+            }
+        });
+        return list;
     }
 
     public void getInfoUser(TextView txt_username, CircleImageView img_user, String id_user) {

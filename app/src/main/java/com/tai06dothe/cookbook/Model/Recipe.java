@@ -1,6 +1,8 @@
 package com.tai06dothe.cookbook.Model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public class Recipe implements Serializable {
@@ -11,12 +13,17 @@ public class Recipe implements Serializable {
     private List<RecipeStep> recipeStepList;
     private String categoryId;
     private String userId;
+    private String userName;
+    private String createAt;
     private int favoriteNumber;
+    private int viewNumber;
+    private String status;
 
     public Recipe() {
     }
 
-    public Recipe(String recipeId, String recipeName, String recipeImage, List<String> ingredientList, List<RecipeStep> recipeStepList, String categoryId, String userId, int favoriteNumber) {
+    public Recipe(String recipeId, String recipeName, String recipeImage, List<String> ingredientList, List<RecipeStep> recipeStepList,
+                  String categoryId, String userId, String userName, String createAt, int favoriteNumber, int viewNumber, String status) {
         this.recipeId = recipeId;
         this.recipeName = recipeName;
         this.recipeImage = recipeImage;
@@ -24,7 +31,11 @@ public class Recipe implements Serializable {
         this.recipeStepList = recipeStepList;
         this.categoryId = categoryId;
         this.userId = userId;
+        this.userName = userName;
+        this.createAt = createAt;
         this.favoriteNumber = favoriteNumber;
+        this.viewNumber = viewNumber;
+        this.status = status;
     }
 
     public String getRecipeId() {
@@ -83,11 +94,43 @@ public class Recipe implements Serializable {
         this.userId = userId;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(String createAt) {
+        this.createAt = createAt;
+    }
+
     public int getFavoriteNumber() {
         return favoriteNumber;
     }
 
     public void setFavoriteNumber(int favoriteNumber) {
         this.favoriteNumber = favoriteNumber;
+    }
+
+    public int getViewNumber() {
+        return viewNumber;
+    }
+
+    public void setViewNumber(int viewNumber) {
+        this.viewNumber = viewNumber;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

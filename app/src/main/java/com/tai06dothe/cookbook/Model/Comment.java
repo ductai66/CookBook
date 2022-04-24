@@ -11,17 +11,20 @@ public class Comment implements Serializable {
     private String userId;
     private String recipeId;
     private String createAt;
+    private String status;
 
     public Comment() {
     }
 
-    public Comment(String commentId, String content, String image, String userId, String recipeId, String createAt) {
+    public Comment(String commentId, String content, String image, String userId,
+                   String recipeId, String createAt, String status) {
         this.commentId = commentId;
         this.content = content;
         this.image = image;
         this.userId = userId;
         this.recipeId = recipeId;
         this.createAt = createAt;
+        this.status = status;
     }
 
     public String getCommentId() {
@@ -70,5 +73,13 @@ public class Comment implements Serializable {
 
     public void setCreateAt(String createAt) {
         this.createAt = createAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

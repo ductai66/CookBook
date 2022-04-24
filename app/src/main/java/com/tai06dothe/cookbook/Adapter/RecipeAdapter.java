@@ -44,6 +44,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
         ((MainActivity) mContext).getInfoUser(holder.userName, holder.img_user, item.getUserId());
         holder.numberFavorite.setText(String.valueOf(item.getFavoriteNumber()));
         holder.recipeName.setText(item.getRecipeName());
+        holder.viewNumber.setText(String.valueOf(item.getViewNumber()));
         Picasso.get().load(item.getRecipeImage()).into(holder.recipeImage);
 
         // check favorite
@@ -56,7 +57,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView recipeName, userName, numberFavorite;
+        TextView recipeName, userName, numberFavorite, viewNumber;
         ImageView recipeImage;
         CircleImageView img_user;
         CheckBox checkFavorite;
@@ -65,6 +66,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
             super(itemView);
             userName = itemView.findViewById(R.id.userName);
             recipeName = itemView.findViewById(R.id.recipeName);
+            viewNumber = itemView.findViewById(R.id.viewNumber_Main);
             recipeImage = itemView.findViewById(R.id.recipeImage);
             img_user = itemView.findViewById(R.id.img_user);
             checkFavorite = itemView.findViewById(R.id.checkFavorite);
@@ -82,6 +84,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.ViewHolder
                 @Override
                 public void onClick(View view) {
                     Recipe recipe = mList.get(getAdapterPosition());
+                    // process viewNumber
+                    ((MainActivity) mContext).checkViewNumber(recipe.getUserId(), recipe.getRecipeId(), recipe.getViewNumber() + 1);
+
                     ((MainActivity) mContext).showRecipe(recipe);
                 }
             });

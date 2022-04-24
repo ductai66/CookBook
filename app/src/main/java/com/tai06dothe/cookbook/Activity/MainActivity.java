@@ -2,6 +2,7 @@ package com.tai06dothe.cookbook.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,12 +33,16 @@ import com.tai06dothe.cookbook.Adapter.RecipeAdapter;
 import com.tai06dothe.cookbook.LoginSignup.ChangePasswordActivity;
 import com.tai06dothe.cookbook.LoginSignup.LoginActivity;
 import com.tai06dothe.cookbook.Model.Category;
+import com.tai06dothe.cookbook.Model.Comment;
 import com.tai06dothe.cookbook.Model.Favorite;
+import com.tai06dothe.cookbook.Model.Notification;
 import com.tai06dothe.cookbook.Model.Recipe;
 import com.tai06dothe.cookbook.OOP.CategoryRecipes;
 import com.tai06dothe.cookbook.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
     ActionBarDrawerToggle mDrawerToggle;
     NavigationView navigationView;
-    TextView name_user, email_user;
+    TextView name_user, email_user, notifications;
     RecyclerView recycleView_main;
     CircleImageView img_user;
 
@@ -67,7 +72,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        getUser();
+        getUserNavigation();
+        processNotification();
     }
 
     private void init() {
@@ -83,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        notifications = findViewById(R.id.notifications);
+        notifications.setText("0");
+
         mDrawerLayout = findViewById(R.id.draw_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open, R.string.close);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
@@ -94,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         id_user = intent.getStringExtra("userId");
     }
 
-    private void getUser() {
+    private void getUserNavigation() {
         DatabaseReference mRef1 = mDatabase.child("User").child(id_user);
         mRef1.addValueEventListener(new ValueEventListener() {
             @Override
@@ -157,7 +166,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     recipes.add(recipe);
                 }
                 if (recipes.size() > 0) {
-                    categoryRecipes.setRecipes(recipes);
+                    List<Recipe> mList = sortListRecipe(recipes);
+                    categoryRecipes.setRecipes(mList);
                     categoryRecipesList.add(categoryRecipes);
                     categoryAdapter.notifyDataSetChanged();
                 }
@@ -168,6 +178,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+    }
+
+    private List<Recipe> sortListRecipe(List<Recipe> mList) {
+        List<Recipe> recipes = mList;
+        Collections.sort(recipes, new Comparator<Recipe>() {
+            @Override
+            public int compare(Recipe recipe1, Recipe recipe2) {
+                // sap xep giam dan
+                return recipe2.getViewNumber() - recipe1.getViewNumber();
+            }
+        });
+        return recipes;
     }
 
     @Override
@@ -364,5 +386,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             }
         });
+    }
+
+    public void checkViewNumber(String id_userCreateRecipe, String recipeId, int viewNumber) {
+        DatabaseReference rootViewNumberRecipe = mDatabase.child("Recipe");
+        if (!id_user.equalsIgnoreCase(id_userCreateRecipe)) {
+            rootViewNumberRecipe.child(recipeId).child("viewNumber").setValue(viewNumber);
+        }
+    }
+
+    public void processNotification() {
+        DatabaseReference rootNotification = mDatabase.child("Recipe");
+        rootNotification.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Recipe> mList = new ArrayList<>();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                    if (recipe != null
+                        && "NEW".equals(recipe.getStatus())
+                        && !recipe.getUserId().equals(id_user)) {
+                        // add vao list test k lam
+                        mList.add(recipe);
+                    }
+                }
+                notifications.setText(String.valueOf(mList.size()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        refreshData(1000);
+    }
+
+    private void refreshData(int miniseconds) {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                processNotification();
+            }
+        };
+        handler.postDelayed(runnable, miniseconds);
     }
 }

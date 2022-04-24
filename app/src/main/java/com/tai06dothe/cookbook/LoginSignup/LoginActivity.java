@@ -88,9 +88,11 @@ public class LoginActivity extends AppCompatActivity {
         firebaseQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isCheck = true;
                 for (DataSnapshot item : dataSnapshot.getChildren()) {
                     User user = item.getValue(User.class);
                     if (user != null) {
+                        isCheck = false;
                         if (password.equals(user.getPassword())) {
                             Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -99,9 +101,10 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(LoginActivity.this, "Mật khẩu không chính xác !", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Email không tồn tại !", Toast.LENGTH_SHORT).show();
                     }
+                }
+                if (isCheck) {
+                    Toast.makeText(LoginActivity.this, "Email không tồn tại !", Toast.LENGTH_SHORT).show();
                 }
             }
 
